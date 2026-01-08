@@ -1,0 +1,22 @@
+[
+    {
+        "id": "loc_001",
+        "name": "Nairobi Central",
+        "county": "Nairobi"
+    },
+    {
+        "id": "loc_002",
+        "name": "Westlands",
+        "county": "Nairobi"
+    },
+    {
+        "id": "loc_003",
+        "name": "Mombasa Island",
+        "county": "Mombasa"
+    },
+    {
+        "id": "loc_004",
+        "name": "Kisumu City",
+        "county": "Kisumu"
+    }
+]

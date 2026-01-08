@@ -1,0 +1,35 @@
+[
+    {
+        "id": "DP-001",
+        "name": "john terry",
+        "type": "RealTime",
+        "region": "Nairobi North",
+        "rating": 4.9,
+        "current_load": 2,
+        "shopId": "shop_mombasa",
+        "email": "john.terry@electrocare.co.ke",
+        "password": "Password123!"
+    },
+    {
+        "id": "DP-002",
+        "name": "Express Runners",
+        "type": "OneTime",
+        "region": "Nairobi Central",
+        "rating": 4.7,
+        "current_load": 5,
+        "shopId": "shop_nairobi",
+        "email": "express.runners@electrocare.co.ke",
+        "password": "Password123!"
+    },
+    {
+        "id": "DP-003",
+        "name": "Reliable Movers",
+        "type": "RealTime",
+        "region": "Nairobi West",
+        "rating": 4.8,
+        "current_load": 1,
+        "shopId": "shop_nyamira",
+        "email": "reliable.movers@electrocare.co.ke",
+        "password": "Password123!"
+    }
+]

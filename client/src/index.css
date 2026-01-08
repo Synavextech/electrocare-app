@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #050505;
+  --color-surface: #0a0a0c;
+  --color-card: #121214;
+  
+  --color-brand: #00f2fe; /* Vibrant Cyan */
+  --color-brand-vibrant: #4facfe;
+  --color-accent: #f093fb; /* Vibrant Pink/Purple */
+  --color-accent-vibrant: #f5576c;
+
+  --color-primary: var(--color-brand);
+  --color-secondary: var(--color-accent);
+
+  /* Backgrounds */
+  --color-bg-glass: rgba(10, 10, 12, 0.7);
+  --color-border-glass: rgba(255, 255, 255, 0.1);
+
+  /* Shadows */
+  --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+@layer base {
+  :root {
+    --glass-blur: 12px;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: var(--color-bg-glass);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--color-border-glass);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-vibrant) 100%);
+  }
+
+  .vibrant-gradient {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-vibrant) 100%);
+  }
+
+  .nav-blur {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(5, 5, 5, 0.8);
+  }
+}
+
+.transition-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

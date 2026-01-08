@@ -1,0 +1,1177 @@
+[
+    {
+        "id": "shop_mombasa",
+        "name": "Electrocare - Mombasa",
+        "description": "Mombasa branch Shop, coastal regional hub.",
+        "address": "Mombasa CBD, Town Center",
+        "phone": "+254700000001",
+        "password": "Password123!",
+        "email": "mombasa@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 150,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Mombasa",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                39.6672,
+                -4.0435
+            ]
+        },
+        "lat": -4.0435,
+        "lng": 39.6672
+    },
+    {
+        "id": "shop_kwale",
+        "name": "Electrocare - Kwale",
+        "description": "Kwale district headquarters shop.",
+        "address": "Kwale Town, Main Road",
+        "phone": "+254700000002",
+        "password": "Password123!",
+        "email": "kwale@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 45,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kwale",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                39.4606,
+                -4.1736
+            ]
+        },
+        "lat": -4.1736,
+        "lng": 39.4606
+    },
+    {
+        "id": "shop_kilifi",
+        "name": "Electrocare - Kilifi",
+        "description": "Kilifi town service center.",
+        "address": "Kilifi Town, Complex Building",
+        "phone": "+254700000003",
+        "password": "Password123!",
+        "email": "kilifi@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 60,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kilifi",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                39.8496,
+                -3.6305
+            ]
+        },
+        "lat": -3.6305,
+        "lng": 39.8496
+    },
+    {
+        "id": "shop_tanariver",
+        "name": "Electrocare - Hola",
+        "description": "Tana River regional repair center.",
+        "address": "Hola Town Center",
+        "phone": "+254700000004",
+        "password": "Password123!",
+        "email": "hola@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.5,
+        "reviews": 20,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Tana River",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                40.0334,
+                -1.5033
+            ]
+        },
+        "lat": -1.5033,
+        "lng": 40.0334
+    },
+    {
+        "id": "shop_lamu",
+        "name": "Electrocare - Lamu",
+        "description": "Lamu Island and Mainland repair hub.",
+        "address": "Lamu Town, Mkomani",
+        "phone": "+254700000005",
+        "password": "Password123!",
+        "email": "lamu@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 35,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Lamu",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                40.902,
+                -2.269
+            ]
+        },
+        "lat": -2.269,
+        "lng": 40.902
+    },
+    {
+        "id": "shop_taitataveta",
+        "name": "Electrocare - Mwatate",
+        "description": "Taita Taveta county headquarters center.",
+        "address": "Mwatate Town",
+        "phone": "+254700000006",
+        "password": "Password123!",
+        "email": "mwatate@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 40,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Taita/Taveta",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                38.3779,
+                -3.5048
+            ]
+        },
+        "lat": -3.5048,
+        "lng": 38.3779
+    },
+    {
+        "id": "shop_garissa",
+        "name": "Electrocare - Garissa",
+        "description": "Garissa Town regional hub.",
+        "address": "Garissa Central",
+        "phone": "+254700000007",
+        "password": "Password123!",
+        "email": "garissa@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 80,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Garissa",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                39.6461,
+                -0.4532
+            ]
+        },
+        "lat": -0.4532,
+        "lng": 39.6461
+    },
+    {
+        "id": "shop_wajir",
+        "name": "Electrocare - Wajir",
+        "description": "Wajir County repair services.",
+        "address": "Wajir Town",
+        "phone": "+254700000008",
+        "password": "Password123!",
+        "email": "wajir@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.5,
+        "reviews": 25,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Wajir",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                40.0573,
+                1.7471
+            ]
+        },
+        "lat": 1.7471,
+        "lng": 40.0573
+    },
+    {
+        "id": "shop_mandera",
+        "name": "Electrocare - Mandera",
+        "description": "Mandera Town center.",
+        "address": "Mandera Town",
+        "phone": "+254700000009",
+        "password": "Password123!",
+        "email": "mandera@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 30,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Mandera",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                41.8569,
+                3.9366
+            ]
+        },
+        "lat": 3.9366,
+        "lng": 41.8569
+    },
+    {
+        "id": "shop_marsabit",
+        "name": "Electrocare - Marsabit",
+        "description": "Marsabit County hub.",
+        "address": "Marsabit Town",
+        "phone": "+254700000010",
+        "password": "Password123!",
+        "email": "marsabit@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 40,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Marsabit",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.9902,
+                2.3284
+            ]
+        },
+        "lat": 2.3284,
+        "lng": 37.9902
+    },
+    {
+        "id": "shop_isiolo",
+        "name": "Electrocare - Isiolo",
+        "description": "Isiolo Town service station.",
+        "address": "Isiolo Town Center",
+        "phone": "+254700000011",
+        "password": "Password123!",
+        "email": "isiolo@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 55,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Isiolo",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.5833,
+                0.35
+            ]
+        },
+        "lat": 0.35,
+        "lng": 37.5833
+    },
+    {
+        "id": "shop_meru",
+        "name": "Electrocare - Meru",
+        "description": "Meru Town branch.",
+        "address": "Meru CBD",
+        "phone": "+254700000012",
+        "password": "Password123!",
+        "email": "meru@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 110,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Meru",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.6481,
+                0.0463
+            ]
+        },
+        "lat": 0.0463,
+        "lng": 37.6481
+    },
+    {
+        "id": "shop_tharakanithi",
+        "name": "Electrocare - Chuka",
+        "description": "Tharaka-Nithi headquarters.",
+        "address": "Chuka Town",
+        "phone": "+254700000013",
+        "password": "Password123!",
+        "email": "chuka@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 50,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Tharaka-Nithi",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.645,
+                -0.334
+            ]
+        },
+        "lat": -0.334,
+        "lng": 37.645
+    },
+    {
+        "id": "shop_embu",
+        "name": "Electrocare - Embu",
+        "description": "Embu Town branch center.",
+        "address": "Embu CBD",
+        "phone": "+254700000014",
+        "password": "Password123!",
+        "email": "embu@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 90,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Embu",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.4522,
+                -0.5311
+            ]
+        },
+        "lat": -0.5311,
+        "lng": 37.4522
+    },
+    {
+        "id": "shop_kitui",
+        "name": "Electrocare - Kitui",
+        "description": "Kitui Town service center.",
+        "address": "Kitui Town Center",
+        "phone": "+254700000015",
+        "password": "Password123!",
+        "email": "kitui@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 65,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kitui",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                38.0106,
+                -1.375
+            ]
+        },
+        "lat": -1.375,
+        "lng": 38.0106
+    },
+    {
+        "id": "shop_machakos",
+        "name": "Electrocare - Machakos",
+        "description": "Machakos Town central hub.",
+        "address": "Machakos CBD",
+        "phone": "+254700000016",
+        "password": "Password123!",
+        "email": "machakos@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 120,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Machakos",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.2634,
+                -1.5177
+            ]
+        },
+        "lat": -1.5177,
+        "lng": 37.2634
+    },
+    {
+        "id": "shop_makueni",
+        "name": "Electrocare - Wote",
+        "description": "Makueni headquarters center.",
+        "address": "Wote Town",
+        "phone": "+254700000017",
+        "password": "Password123!",
+        "email": "wote@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 50,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Makueni",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.6288,
+                -1.7808
+            ]
+        },
+        "lat": -1.7808,
+        "lng": 37.6288
+    },
+    {
+        "id": "shop_nyandarua",
+        "name": "Electrocare - Ol Kalou",
+        "description": "Nyandarua repair services.",
+        "address": "Ol Kalou Town",
+        "phone": "+254700000018",
+        "password": "Password123!",
+        "email": "olkalou@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 40,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Nyandarua",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.3773,
+                -0.2741
+            ]
+        },
+        "lat": -0.2741,
+        "lng": 36.3773
+    },
+    {
+        "id": "shop_nyeri",
+        "name": "Electrocare - Nyeri",
+        "description": "Nyeri Town branch center.",
+        "address": "Nyeri CBD",
+        "phone": "+254700000019",
+        "password": "Password123!",
+        "email": "nyeri@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 130,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Nyeri",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.9515,
+                -0.4215
+            ]
+        },
+        "lat": -0.4215,
+        "lng": 36.9515
+    },
+    {
+        "id": "shop_kirinyaga",
+        "name": "Electrocare - Kerugoya",
+        "description": "Kirinyaga county services.",
+        "address": "Kerugoya Town",
+        "phone": "+254700000020",
+        "password": "Password123!",
+        "email": "kerugoya@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 60,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kirinyaga",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.28,
+                -0.5
+            ]
+        },
+        "lat": -0.5,
+        "lng": 37.28
+    },
+    {
+        "id": "shop_muranga",
+        "name": "Electrocare - Murang'a",
+        "description": "Murang'a Town hub.",
+        "address": "Murang'a Town Center",
+        "phone": "+254700000021",
+        "password": "Password123!",
+        "email": "muranga@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 85,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Murang'a",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                37.1517,
+                -0.721
+            ]
+        },
+        "lat": -0.721,
+        "lng": 37.1517
+    },
+    {
+        "id": "shop_kiambu",
+        "name": "Electrocare - Kiambu",
+        "description": "Kiambu Town branch hub.",
+        "address": "Kiambu CBD",
+        "phone": "+254700000022",
+        "password": "Password123!",
+        "email": "kiambu@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 110,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kiambu",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.83,
+                -1.17
+            ]
+        },
+        "lat": -1.17,
+        "lng": 36.83
+    },
+    {
+        "id": "shop_turkana",
+        "name": "Electrocare - Lodwar",
+        "description": "Turkana County hub.",
+        "address": "Lodwar Town",
+        "phone": "+254700000023",
+        "password": "Password123!",
+        "email": "lodwar@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.5,
+        "reviews": 30,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Turkana",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.5973,
+                3.1191
+            ]
+        },
+        "lat": 3.1191,
+        "lng": 35.5973
+    },
+    {
+        "id": "shop_westpokot",
+        "name": "Electrocare - Kapenguria",
+        "description": "West Pokot headquarters.",
+        "address": "Kapenguria Town",
+        "phone": "+254700000024",
+        "password": "Password123!",
+        "email": "kapenguria@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 25,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "West Pokot",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.1092,
+                1.2461
+            ]
+        },
+        "lat": 1.2461,
+        "lng": 35.1092
+    },
+    {
+        "id": "shop_samburu",
+        "name": "Electrocare - Maralal",
+        "description": "Samburu County station.",
+        "address": "Maralal Town",
+        "phone": "+254700000025",
+        "password": "Password123!",
+        "email": "maralal@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 20,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Samburu",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.7025,
+                1.0967
+            ]
+        },
+        "lat": 1.0967,
+        "lng": 36.7025
+    },
+    {
+        "id": "shop_transnzoia",
+        "name": "Electrocare - Kitale",
+        "description": "Trans Nzoia hub.",
+        "address": "Kitale CBD",
+        "phone": "+254700000026",
+        "password": "Password123!",
+        "email": "kitale@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 100,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Trans Nzoia",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.0062,
+                1.0157
+            ]
+        },
+        "lat": 1.0157,
+        "lng": 35.0062
+    },
+    {
+        "id": "shop_uasingishu",
+        "name": "Electrocare - Eldoret",
+        "description": "Uasin Gishu central hub.",
+        "address": "Eldoret CBD",
+        "phone": "+254700000027",
+        "password": "Password123!",
+        "email": "eldoret@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 160,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Uasin Gishu",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.2698,
+                0.5143
+            ]
+        },
+        "lat": 0.5143,
+        "lng": 35.2698
+    },
+    {
+        "id": "shop_elgeyomarakwet",
+        "name": "Electrocare - Iten",
+        "description": "Elgeyo/Marakwet headquarters.",
+        "address": "Iten Town",
+        "phone": "+254700000028",
+        "password": "Password123!",
+        "email": "iten@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 45,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Elgeyo/Marakwet",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.5,
+                0.67
+            ]
+        },
+        "lat": 0.67,
+        "lng": 35.5
+    },
+    {
+        "id": "shop_nandi",
+        "name": "Electrocare - Kapsabet",
+        "description": "Nandi County services.",
+        "address": "Kapsabet Town",
+        "phone": "+254700000029",
+        "password": "Password123!",
+        "email": "kapsabet@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 55,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Nandi",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.1017,
+                0.2033
+            ]
+        },
+        "lat": 0.2033,
+        "lng": 35.1017
+    },
+    {
+        "id": "shop_baringo",
+        "name": "Electrocare - Kabarnet",
+        "description": "Baringo headquarters hub.",
+        "address": "Kabarnet Town",
+        "phone": "+254700000030",
+        "password": "Password123!",
+        "email": "kabarnet@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 40,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Baringo",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.7414,
+                0.4914
+            ]
+        },
+        "lat": 0.4914,
+        "lng": 35.7414
+    },
+    {
+        "id": "shop_laikipia",
+        "name": "Electrocare - Rumuruti",
+        "description": "Laikipia County hub.",
+        "address": "Rumuruti Town",
+        "phone": "+254700000031",
+        "password": "Password123!",
+        "email": "rumuruti@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.6,
+        "reviews": 30,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Laikipia",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.5333,
+                0.2667
+            ]
+        },
+        "lat": 0.2667,
+        "lng": 36.5333
+    },
+    {
+        "id": "shop_nakuru",
+        "name": "Electrocare - Nakuru",
+        "description": "Nakuru City hub.",
+        "address": "Nakuru CBD",
+        "phone": "+254700000032",
+        "password": "Password123!",
+        "email": "nakuru@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 200,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Nakuru",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.0662,
+                -0.2831
+            ]
+        },
+        "lat": -0.2831,
+        "lng": 36.0662
+    },
+    {
+        "id": "shop_narok",
+        "name": "Electrocare - Narok",
+        "description": "Narok Town station.",
+        "address": "Narok Town",
+        "phone": "+254700000033",
+        "password": "Password123!",
+        "email": "narok@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 60,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Narok",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.8725,
+                -1.0783
+            ]
+        },
+        "lat": -1.0783,
+        "lng": 35.8725
+    },
+    {
+        "id": "shop_kajiado",
+        "name": "Electrocare - Kajiado",
+        "description": "Kajiado County services.",
+        "address": "Kajiado Town",
+        "phone": "+254700000034",
+        "password": "Password123!",
+        "email": "kajiado@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 50,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kajiado",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.776,
+                -1.852
+            ]
+        },
+        "lat": -1.852,
+        "lng": 36.776
+    },
+    {
+        "id": "shop_kericho",
+        "name": "Electrocare - Kericho",
+        "description": "Kericho Town hub.",
+        "address": "Kericho CBD",
+        "phone": "+254700000035",
+        "password": "Password123!",
+        "email": "kericho@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 90,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kericho",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.2833,
+                -0.3667
+            ]
+        },
+        "lat": -0.3667,
+        "lng": 35.2833
+    },
+    {
+        "id": "shop_bomet",
+        "name": "Electrocare - Bomet",
+        "description": "Bomet headquarters hub.",
+        "address": "Bomet Town",
+        "phone": "+254700000036",
+        "password": "Password123!",
+        "email": "bomet@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 50,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Bomet",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                35.3400,
+                -0.7800
+            ]
+        },
+        "lat": -0.78,
+        "lng": 35.34
+    },
+    {
+        "id": "shop_kakamega",
+        "name": "Electrocare - Kakamega",
+        "description": "Kakamega County hub.",
+        "address": "Kakamega CBD",
+        "phone": "+254700000037",
+        "password": "Password123!",
+        "email": "kakamega@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 110,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kakamega",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.75,
+                0.2833
+            ]
+        },
+        "lat": 0.2833,
+        "lng": 34.75
+    },
+    {
+        "id": "shop_vihiga",
+        "name": "Electrocare - Mbale",
+        "description": "Vihiga headquarters center.",
+        "address": "Mbale Town",
+        "phone": "+254700000038",
+        "password": "Password123!",
+        "email": "mbale@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 45,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Vihiga",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.7214,
+                0.0753
+            ]
+        },
+        "lat": 0.0753,
+        "lng": 34.7214
+    },
+    {
+        "id": "shop_bungoma",
+        "name": "Electrocare - Bungoma",
+        "description": "Bungoma Town hub center.",
+        "address": "Bungoma CBD",
+        "phone": "+254700000039",
+        "password": "Password123!",
+        "email": "bungoma@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 100,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Bungoma",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.56,
+                0.5633
+            ]
+        },
+        "lat": 0.5633,
+        "lng": 34.56
+    },
+    {
+        "id": "shop_busia",
+        "name": "Electrocare - Busia",
+        "description": "Busia border hub center.",
+        "address": "Busia Town",
+        "phone": "+254700000040",
+        "password": "Password123!",
+        "email": "busia@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 70,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Busia",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.111,
+                0.4608
+            ]
+        },
+        "lat": 0.4608,
+        "lng": 34.111
+    },
+    {
+        "id": "shop_siaya",
+        "name": "Electrocare - Siaya",
+        "description": "Siaya County headquarters.",
+        "address": "Siaya Town",
+        "phone": "+254700000041",
+        "password": "Password123!",
+        "email": "siaya@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 50,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Siaya",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.28,
+                0.05
+            ]
+        },
+        "lat": 0.05,
+        "lng": 34.28
+    },
+    {
+        "id": "shop_kisumu",
+        "name": "Electrocare - Kisumu",
+        "description": "Kisumu City central hub.",
+        "address": "Kisumu CBD",
+        "phone": "+254700000042",
+        "password": "Password123!",
+        "email": "kisumu@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.9,
+        "reviews": 180,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kisumu",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.75,
+                -0.1
+            ]
+        },
+        "lat": -0.1,
+        "lng": 34.75
+    },
+    {
+        "id": "shop_homabay",
+        "name": "Electrocare - Homa Bay",
+        "description": "Homa Bay headquarters.",
+        "address": "Homa Bay Town",
+        "phone": "+254700000043",
+        "password": "Password123!",
+        "email": "homabay@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 55,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Homa Bay",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.45,
+                -0.5333
+            ]
+        },
+        "lat": -0.5333,
+        "lng": 34.45
+    },
+    {
+        "id": "shop_migori",
+        "name": "Electrocare - Migori",
+        "description": "Migori County services.",
+        "address": "Migori Town",
+        "phone": "+254700000044",
+        "password": "Password123!",
+        "email": "migori@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 65,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Migori",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.46,
+                -1.06
+            ]
+        },
+        "lat": -1.06,
+        "lng": 34.46
+    },
+    {
+        "id": "shop_kisii",
+        "name": "Electrocare - Kisii",
+        "description": "Kisii Town central hub.",
+        "address": "Kisii CBD",
+        "phone": "+254700000045",
+        "password": "Password123!",
+        "email": "kisii@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.8,
+        "reviews": 120,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Kisii",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.7667,
+                -0.6667
+            ]
+        },
+        "lat": -0.6667,
+        "lng": 34.7667
+    },
+    {
+        "id": "shop_nyamira",
+        "name": "Electrocare - Nyamira",
+        "description": "Nyamira County headquarters.",
+        "address": "Nyamira Town",
+        "phone": "+254700000046",
+        "password": "Password123!",
+        "email": "nyamira@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 4.7,
+        "reviews": 40,
+        "category": "service center",
+        "subCategory": "All devices repair",
+        "county": "Nyamira",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                34.93,
+                -0.56
+            ]
+        },
+        "lat": -0.56,
+        "lng": 34.93
+    },
+    {
+        "id": "shop_nairobi",
+        "name": "Electrocare - Nairobi CBD",
+        "description": "Main Electrocare Hub and National Headquarters.",
+        "address": "Moi Avenue, Nairobi CBD",
+        "phone": "+254700000047",
+        "password": "Password123!",
+        "email": "nairobi@electrocare.co.ke",
+        "logo": "public/images/repair.jpeg",
+        "cover": "public/images/repair1.jpeg",
+        "rating": 5.0,
+        "reviews": 500,
+        "category": "service center",
+        "subCategory": "All devices repair & HQ",
+        "county": "Nairobi",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                36.8172,
+                -1.2864
+            ]
+        },
+        "lat": -1.2864,
+        "lng": 36.8172
+    }
+]

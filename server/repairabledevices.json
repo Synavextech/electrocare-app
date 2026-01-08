@@ -1,0 +1,32 @@
+[
+    {
+        "id": "type_001",
+        "name": "Mobile Phone",
+        "icon": "📱"
+    },
+    {
+        "id": "type_002",
+        "name": "Laptop",
+        "icon": "💻"
+    },
+    {
+        "id": "type_003",
+        "name": "Television",
+        "icon": "📺"
+    },
+    {
+        "id": "type_004",
+        "name": "Fridge",
+        "icon": "🧊"
+    },
+    {
+        "id": "type_005",
+        "name": "Kitchen Appliances",
+        "icon": "appliance"
+    },
+    {
+        "id": "type_006",
+        "name": "Solar Panel & Related accessories",
+        "icon": " 🌞"
+    }
+]

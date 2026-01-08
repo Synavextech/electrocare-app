@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "lib": [
+            "ESNext",
+            "DOM",
+            "deno.window",
+            "deno.ns"
+        ],
+        "strict": true,
+        "allowJs": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node"
+    },
+    "include": [
+        "./**/*.ts"
+    ]
+}
