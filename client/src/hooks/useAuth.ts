@@ -11,7 +11,6 @@ const useAuth = () => {
   const login = useMutation({
     mutationFn: (data: { email: string; password: string }) => apiClient.post('/auth/login', data).then((res: AxiosResponse) => res.data),
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
       // Set user data in context
       setUser({
         id: data.user.id,
@@ -26,7 +25,6 @@ const useAuth = () => {
   const register = useMutation({
     mutationFn: (data: any) => apiClient.post('/auth/register', data).then((res: AxiosResponse) => res.data),
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
       setUser({
         id: data.user.id,
         name: data.user.name,
@@ -36,10 +34,17 @@ const useAuth = () => {
     },
   });
 
+  const logoutMutation = useMutation({
+    mutationFn: () => apiClient.post('/auth/logout').then((res: AxiosResponse) => res.data),
+    onSuccess: () => {
+      setUser(null);
+      queryClient.clear();
+      localStorage.removeItem('user');
+    },
+  });
+
   const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    queryClient.clear();
+    logoutMutation.mutate();
   };
 
   return {

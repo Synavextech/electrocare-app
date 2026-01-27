@@ -87,6 +87,14 @@ export const register = async (req: Request, res: Response) => {
       console.warn('Email sending failed, but registration succeeded:', emailError);
     }
 
+    // Set HttpOnly cookie
+    res.cookie('access_token', authData.session?.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600000, // 1 hour
+    });
+
     res.json({ user: authData.user, message: 'User registered successfully' });
   } catch (err) {
     console.error('Registration failed:', (err as Error).message);
@@ -112,7 +120,15 @@ export const login = async (req: Request, res: Response) => {
       .eq('id', data.user.id)
       .single();
 
-    res.json({ token: data.session.access_token, user: { ...data.user, ...profile } });
+    // Set HttpOnly cookie
+    res.cookie('access_token', data.session.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600000, // 1 hour
+    });
+
+    res.json({ user: { ...data.user, ...profile } });
   } catch (err) {
     console.error('Login failed:', (err as Error).message);
     res.status(500).json({ error: 'Login failed' });
@@ -157,4 +173,23 @@ export const forgotPassword = async (req: Request, res: Response) => {
     console.error('Forgot password failed:', (err as Error).message);
     res.status(500).json({ error: 'Failed to send reset email' });
   }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie('access_token');
+  res.json({ message: 'Logged out successfully' });
+};
+
+export const getMe = async (req: Request, res: Response) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+
+  // req.user is set by authMiddleware
+  // Fetch full profile
+  const { data: profile } = await supabase
+    .from('User')
+    .select('*')
+    .eq('id', req.user.id)
+    .single();
+
+  res.json({ user: { ...req.user, ...profile } });
 };

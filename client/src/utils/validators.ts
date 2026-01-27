@@ -9,6 +9,7 @@ export const userSchema = z.object({
 // Add this new export for repair validation (aligns with repairs table and form fields)
 export const repairSchema = z.object({
   device_type: z.string().min(1, { message: 'Device type is required' }),  // e.g., 'phone', 'tablet'
+  device_model: z.string().optional(),
   issue: z.string().min(1, { message: 'Issue description is required' }),  // e.g., 'screen crack'
   delivery: z.boolean().optional(),  // True for pickup/delivery; false for walk-in
   // Optional fields (add as per form; e.g., for cost, status if pre-set)

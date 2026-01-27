@@ -1,36 +1,42 @@
 [
   {
     "id": "model_001",
+    "device": "phone",
     "name": "iPhone 14 Pro",
     "brand": "Apple",
     "deviceTypeId": "type_001"
   },
   {
     "id": "model_002",
+    "device": "phone",
     "name": "iPhone 15",
     "brand": "Apple",
     "deviceTypeId": "type_001"
   },
   {
     "id": "model_003",
+    "device": "phone",
     "name": "Samsung Galaxy S23",
     "brand": "Samsung",
     "deviceTypeId": "type_001"
   },
   {
     "id": "model_004",
+    "device": "tablet",
     "name": "iPad Pro 11",
     "brand": "Apple",
-    "deviceTypeId": "type_002"
+    "deviceTypeId": "type_001"
   },
   {
     "id": "model_005",
+    "device": "phone",
     "name": "Google Pixel 7",
     "brand": "Google",
     "deviceTypeId": "type_001"
   },
   {
     "id": "model_006",
+    "device": "laptop",
     "name": "MacBook Air M2",
     "brand": "Apple",
     "deviceTypeId": "type_002"

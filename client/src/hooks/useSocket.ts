@@ -7,7 +7,7 @@ const useSocket = () => {
 
   useEffect(() => {
     const newSocket: Socket = io(import.meta.env.VITE_API_BASE_URL, {
-      auth: { token: localStorage.getItem('token') }, // Auth per docs
+      withCredentials: true,
     });
 
     newSocket.on('connect', () => console.log('Socket connected'));

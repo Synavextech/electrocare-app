@@ -40,6 +40,7 @@ const MarketplacePage: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const postMutation = useMutation({
     mutationFn: (data: any) => apiClient.post('/marketplace', {
@@ -304,7 +305,10 @@ const MarketplacePage: React.FC = () => {
           <div className="absolute inset-0 bg-canvas/80 backdrop-blur-xl" onClick={() => setSelectedListing(null)}></div>
           <div className="glass-card w-full max-w-4xl rounded-[2.5rem] border border-white/10 shadow-premium overflow-hidden relative animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setSelectedListing(null)}
+              onClick={() => {
+                setSelectedListing(null);
+                setActiveImageIndex(0);
+              }}
               className="absolute top-8 right-8 text-white/40 hover:text-white transition-premium z-20"
             >
               <span className="text-2xl font-black">✕</span>
@@ -312,17 +316,39 @@ const MarketplacePage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="p-8 space-y-4">
-                <div className="aspect-square bg-white/5 rounded-3xl overflow-hidden border border-white/10">
+                <div className="aspect-square bg-white/5 rounded-3xl overflow-hidden border border-white/10 relative group">
                   <img
-                    src={selectedListing.imageUrls?.[0] || '/placeholder.png'}
+                    src={selectedListing.imageUrls?.[activeImageIndex] || '/placeholder.png'}
                     alt={selectedListing.device}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-500"
                   />
+
+                  {selectedListing.imageUrls && selectedListing.imageUrls.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setActiveImageIndex(prev => (prev === 0 ? selectedListing.imageUrls!.length - 1 : prev - 1))}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-canvas/40 backdrop-blur-md p-3 rounded-full text-white opacity-0 group-hover:opacity-100 transition-premium"
+                      >
+                        ←
+                      </button>
+                      <button
+                        onClick={() => setActiveImageIndex(prev => (prev === selectedListing.imageUrls!.length - 1 ? 0 : prev + 1))}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-canvas/40 backdrop-blur-md p-3 rounded-full text-white opacity-0 group-hover:opacity-100 transition-premium"
+                      >
+                        →
+                      </button>
+                    </>
+                  )}
                 </div>
-                <div className="grid grid-cols-4 gap-4">
-                  {selectedListing.imageUrls?.slice(1).map((url, i) => (
-                    <div key={i} className="aspect-square bg-white/5 rounded-xl overflow-hidden border border-white/5">
-                      <img src={url} alt="Details" className="w-full h-full object-cover" />
+
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                  {selectedListing.imageUrls?.map((url, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setActiveImageIndex(i)}
+                      className={`min-w-[80px] h-20 bg-white/5 rounded-xl overflow-hidden border cursor-pointer transition-premium ${activeImageIndex === i ? 'border-brand' : 'border-white/5'}`}
+                    >
+                      <img src={url} alt={`Thumbnail ${i}`} className="w-full h-full object-cover" />
                     </div>
                   ))}
                 </div>

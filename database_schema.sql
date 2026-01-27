@@ -285,6 +285,36 @@ CREATE POLICY "Users can update their own friendships"
 ON public."Friendship" FOR UPDATE
 USING (auth.uid() = "userId" OR auth.uid() = "friendId");
 
+-- RoleApplications table
+CREATE TABLE public."RoleApplication" (
+  "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  "userId" UUID REFERENCES public."User"("id") ON DELETE CASCADE NOT NULL,
+  "requestedRole" TEXT NOT NULL, -- 'technician', 'delivery'
+  "status" TEXT DEFAULT 'pending', -- pending, approved, rejected
+  "documents" JSONB DEFAULT '[]', -- Array of document URLs
+  "notes" TEXT,
+  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public."RoleApplication" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own applications"
+ON public."RoleApplication" FOR SELECT
+USING (auth.uid() = "userId");
+
+CREATE POLICY "Users can create own applications"
+ON public."RoleApplication" FOR INSERT
+WITH CHECK (auth.uid() = "userId");
+
+CREATE POLICY "Admins can view all applications"
+ON public."RoleApplication" FOR SELECT
+USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can update all applications"
+ON public."RoleApplication" FOR UPDATE
+USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');
+
 -- Storage Buckets Configuration
 -- Note: These usually need to be run in the Supabase SQL editor or via API
 

@@ -8,6 +8,8 @@ const shopsPath = path.join(__dirname, '..', 'shops.json');
 export const getTechniciansByShop = async (shopId) => {
     const data = await fs.readFile(techniciansPath, 'utf8');
     const technicians = JSON.parse(data);
+    if (!shopId)
+        return technicians;
     return technicians.filter(t => t.shopId === shopId);
 };
 export const getTechnicianById = async (id) => {

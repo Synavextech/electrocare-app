@@ -16,9 +16,9 @@ const Footer: React.FC = () => {
                     <div>
                         <h4 className="font-semibold mb-4">Contact</h4>
                         <ul className="space-y-2 text-sm text-gray-400">
-                            <li>Nairobi, Kenya</li>
-                            <li>support@electrocare.com</li>
-                            <li>+254 700 000 000</li>
+                            <li>Washington, D.C</li>
+                            <li>support@electrocare.tech</li>
+                            <li>+123 0 000 000</li>
                         </ul>
                     </div>
                     <div>

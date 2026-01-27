@@ -3,6 +3,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import useAuth from '../hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
 import TechnicianApplication from './TechnicianApplication';
+import DeliveryApplication from './DeliveryApplication';
 import useOnClickOutside from '../hooks/useOnClickOutside';
 
 const TopNav = () => {
@@ -91,12 +92,7 @@ const TopNav = () => {
 
               <li className="space-y-1">
                 <TechnicianApplication />
-                <button
-                  onClick={() => { alert('Delivery Application system coming soon!'); setOpsOpen(false); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-premium text-sm font-bold text-white/80"
-                >
-                  <span className="text-lg">🚚</span> Apply: Delivery Partner
-                </button>
+                <DeliveryApplication />
                 <Link
                   to="/marketplace"
                   search={{ action: 'sell-dead' }}

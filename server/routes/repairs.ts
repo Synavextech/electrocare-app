@@ -11,6 +11,7 @@ const router = express.Router();
 const repairSchema = z.object({
   deviceType: z.string().optional(),
   device_type: z.string().optional(),
+  device_model: z.string().optional(),
   issue: z.string().min(1),
   delivery: z.boolean(),
   shopId: z.string().optional(),

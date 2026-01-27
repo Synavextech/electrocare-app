@@ -21,12 +21,22 @@
     },
     {
         "id": "type_005",
-        "name": "Kitchen Appliances",
-        "icon": "appliance"
+        "name": "Solar Panel & Related accessories",
+        "icon": "☀️"
     },
     {
         "id": "type_006",
-        "name": "Solar Panel & Related accessories",
-        "icon": " 🌞"
+        "name": "Washing Machine",
+        "icon": "🧺"
+    },
+    {
+        "id": "type_007",
+        "name": "Cooker",
+        "icon": "🍳"
+    },
+    {
+        "id": "type_008",
+        "name": "Microwave",
+        "icon": "⏲️"
     }
 ]

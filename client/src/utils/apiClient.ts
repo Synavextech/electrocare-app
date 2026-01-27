@@ -3,15 +3,12 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosE
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
-// Request interceptor for auth token
+// Request interceptor (not needed for manually adding Bearer token anymore as we use cookies)
 apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config; // Direct return; async allows if needed for future
+  return config;
 });
 
 // Response interceptor for error handling

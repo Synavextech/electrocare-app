@@ -46,6 +46,8 @@ const Techniciandashboard: React.FC = () => {
     });
 
     const [repairFeedback, setRepairFeedback] = useState<{ [key: string]: { cost: string, time: string } }>({});
+    const [selectedGalleryListing, setSelectedGalleryListing] = useState<any | null>(null);
+    const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
 
     const filteredMarketplace = pendingSales?.filter((s: any) => s.condition !== 'Unusable') || [];
     const deadPhones = pendingSales?.filter((s: any) => s.condition === 'Unusable') || [];
@@ -198,17 +200,30 @@ const Techniciandashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {filteredMarketplace.map((sale: any) => (
                             <div key={sale.id} className="glass-card p-8 rounded-[2rem] border border-white/5 group hover:border-brand/30 transition-premium">
-                                <div className="flex gap-4 mb-6">
-                                    {sale.imageUrls?.[0] ? (
-                                        <img src={sale.imageUrls[0]} alt="Device" className="w-20 h-20 rounded-2xl object-cover" />
-                                    ) : (
-                                        <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl">📱</div>
-                                    )}
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white mb-1">{sale.device}</h3>
-                                        <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Seller: {sale.user?.name}</p>
-                                        <span className="inline-block mt-2 px-3 py-1 bg-brand/10 text-brand rounded-full text-[8px] font-black uppercase tracking-widest">{sale.condition}</span>
+                                <div className="mb-6 relative group">
+                                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                                        {sale.imageUrls && sale.imageUrls.length > 0 ? (
+                                            sale.imageUrls.map((url: string, i: number) => (
+                                                <div
+                                                    key={i}
+                                                    onClick={() => {
+                                                        setSelectedGalleryListing(sale);
+                                                        setActiveGalleryIndex(i);
+                                                    }}
+                                                    className="min-w-[100px] h-20 rounded-xl overflow-hidden border border-white/10 flex-shrink-0 cursor-pointer hover:border-brand transition-premium snap-start"
+                                                >
+                                                    <img src={url} alt="Device" className="w-full h-full object-cover" />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center text-3xl">📱</div>
+                                        )}
                                     </div>
+                                    <span className="absolute -top-3 right-0 px-3 py-1 bg-brand/10 text-brand rounded-full text-[8px] font-black uppercase tracking-widest">{sale.condition}</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-1">{sale.device}</h3>
+                                    <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Seller: {sale.user?.name}</p>
                                 </div>
                                 <p className="text-white/60 text-xs mb-6 line-clamp-2 leading-relaxed">{sale.description}</p>
                                 <div className="flex justify-between items-center pt-6 border-t border-white/5">
@@ -239,8 +254,24 @@ const Techniciandashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {deadPhones.map((sale: any) => (
                             <div key={sale.id} className="glass-card p-8 rounded-[2rem] border border-accent/10 bg-accent/5">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-xl font-bold text-white">{sale.device}</h3>
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-bold text-white mb-2">{sale.device}</h3>
+                                        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x mb-4">
+                                            {sale.imageUrls?.map((url: string, i: number) => (
+                                                <div
+                                                    key={i}
+                                                    onClick={() => {
+                                                        setSelectedGalleryListing(sale);
+                                                        setActiveGalleryIndex(i);
+                                                    }}
+                                                    className="min-w-[80px] h-16 rounded-lg overflow-hidden border border-white/5 flex-shrink-0 cursor-pointer hover:border-accent transition-premium snap-start"
+                                                >
+                                                    <img src={url} alt="Dead Device" className="w-full h-full object-cover" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                     <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-[10px] font-black uppercase tracking-widest">DEAD PHONE</span>
                                 </div>
                                 <p className="text-white/40 text-sm mb-6">{sale.description}</p>
@@ -263,6 +294,78 @@ const Techniciandashboard: React.FC = () => {
                         )}
                     </div>
                 </section>
+            )}
+
+            {/* Gallery Modal */}
+            {selectedGalleryListing && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-canvas/90 backdrop-blur-2xl" onClick={() => setSelectedGalleryListing(null)}></div>
+                    <div className="relative w-full max-w-5xl glass-card rounded-[3rem] border border-white/10 shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+                        <button
+                            onClick={() => setSelectedGalleryListing(null)}
+                            className="absolute top-8 right-8 text-white/40 hover:text-white transition-premium z-20"
+                        >
+                            <span className="text-3xl font-black">✕</span>
+                        </button>
+
+                        <div className="p-12 grid grid-cols-1 md:grid-cols-3 gap-12">
+                            <div className="md:col-span-2 space-y-6">
+                                <div className="aspect-video bg-white/5 rounded-[2rem] overflow-hidden border border-white/10 relative group">
+                                    <img
+                                        src={selectedGalleryListing.imageUrls?.[activeGalleryIndex]}
+                                        alt="Full View"
+                                        className="w-full h-full object-contain"
+                                    />
+                                    {selectedGalleryListing.imageUrls?.length > 1 && (
+                                        <>
+                                            <button
+                                                onClick={() => setActiveGalleryIndex(prev => (prev === 0 ? selectedGalleryListing.imageUrls!.length - 1 : prev - 1))}
+                                                className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl p-4 rounded-full text-white opacity-0 group-hover:opacity-100 transition-premium"
+                                            >
+                                                ←
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveGalleryIndex(prev => (prev === selectedGalleryListing.imageUrls!.length - 1 ? 0 : prev + 1))}
+                                                className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl p-4 rounded-full text-white opacity-0 group-hover:opacity-100 transition-premium"
+                                            >
+                                                →
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                                    {selectedGalleryListing.imageUrls?.map((url: string, i: number) => (
+                                        <div
+                                            key={i}
+                                            onClick={() => setActiveGalleryIndex(i)}
+                                            className={`min-w-[100px] h-24 rounded-2xl overflow-hidden border cursor-pointer transition-premium ${activeGalleryIndex === i ? 'border-brand' : 'border-white/5 opacity-50'}`}
+                                        >
+                                            <img src={url} alt={`Thumb ${i}`} className="w-full h-full object-cover" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex flex-col justify-center">
+                                <span className="text-xs font-black uppercase tracking-[0.3em] text-brand mb-4 block">Detailed Inspection</span>
+                                <h2 className="text-4xl font-black text-white mb-6 tracking-tighter">{selectedGalleryListing.device}</h2>
+                                <div className="glass-card p-6 rounded-2xl border border-white/5 space-y-4">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Seller</p>
+                                        <p className="text-white font-bold">{selectedGalleryListing.user?.name}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Condition</p>
+                                        <p className="text-brand font-bold">{selectedGalleryListing.condition}</p>
+                                    </div>
+                                    <div className="pt-4 border-t border-white/5">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-2">Description</p>
+                                        <p className="text-white/60 text-xs leading-relaxed max-h-40 overflow-y-auto">{selectedGalleryListing.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

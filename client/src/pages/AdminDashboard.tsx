@@ -38,6 +38,12 @@ const AdminDashboard: React.FC = () => {
     enabled: activeTab === 'approvals',
   });
 
+  const { data: roleApplications } = useQuery({
+    queryKey: ['admin-role-applications'],
+    queryFn: () => apiClient.get('/admin/role-applications').then((res) => res.data),
+    enabled: activeTab === 'approvals',
+  });
+
   const { data: shops } = useQuery({
     queryKey: ['shops-all'],
     queryFn: () => apiClient.get('/shops').then((res) => res.data),
@@ -80,9 +86,29 @@ const AdminDashboard: React.FC = () => {
     },
   });
 
+  const approveRoleApplicationMutation = useMutation({
+    mutationFn: (applicationId: string) => apiClient.post('/admin/approve-role-application', { applicationId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-role-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      alert('Role application approved!');
+    },
+  });
+
+  const rejectRoleApplicationMutation = useMutation({
+    mutationFn: ({ applicationId, reason }: { applicationId: string, reason: string }) =>
+      apiClient.post('/admin/reject-role-application', { applicationId, reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-role-applications'] });
+      alert('Role application rejected');
+    },
+  });
+
   const [rejectionReason, setRejectionReason] = useState<{ [key: string]: string }>({});
 
   const [broadcast, setBroadcast] = useState({ subject: '', message: '' });
+  const [selectedGalleryListing, setSelectedGalleryListing] = useState<any | null>(null);
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
 
   const sendNotificationMutation = useMutation({
     mutationFn: (data: { subject: string, message: string }) =>
@@ -194,13 +220,31 @@ const AdminDashboard: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                   {pendingSales?.map((sale: any) => (
                     <div key={sale.id} className="glass-card p-8 rounded-[2rem] border border-white/5 hover:border-brand/30 transition-premium shadow-lg group">
-                      <div className="flex justify-between items-start mb-6">
-                        {sale.imageUrls && sale.imageUrls[0] ? (
-                          <img src={sale.imageUrls[0]} alt="Device" className="w-16 h-16 rounded-xl object-cover" />
-                        ) : (
-                          <div className="text-4xl">📱</div>
+                      <div className="mb-6 relative group">
+                        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                          {sale.imageUrls && sale.imageUrls.length > 0 ? (
+                            sale.imageUrls.map((url: string, i: number) => (
+                              <div
+                                key={i}
+                                onClick={() => {
+                                  setSelectedGalleryListing(sale);
+                                  setActiveGalleryIndex(i);
+                                }}
+                                className="min-w-[120px] h-24 rounded-xl overflow-hidden border border-white/10 flex-shrink-0 cursor-pointer hover:border-brand transition-premium snap-start"
+                              >
+                                <img src={url} alt="Device" className="w-full h-full object-cover" />
+                              </div>
+                            ))
+                          ) : (
+                            <div className="w-24 h-24 rounded-xl bg-white/5 flex items-center justify-center text-4xl">📱</div>
+                          )}
+                        </div>
+                        {sale.imageUrls && sale.imageUrls.length > 3 && (
+                          <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-canvas/80 to-transparent pointer-events-none flex items-center justify-end pr-2 text-[10px] font-black text-brand uppercase tracking-widest">
+                            More →
+                          </div>
                         )}
-                        <span className={`glass-card px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${sale.condition === 'Unusable' ? 'bg-accent/20 text-accent' : 'bg-brand/20 text-brand'}`}>
+                        <span className={`absolute -top-3 right-0 glass-card px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${sale.condition === 'Unusable' ? 'bg-accent/20 text-accent' : 'bg-brand/20 text-brand'}`}>
                           {sale.condition === 'Unusable' ? 'DEAD PHONE' : sale.condition}
                         </span>
                       </div>
@@ -230,6 +274,62 @@ const AdminDashboard: React.FC = () => {
                               Reject
                             </button>
                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <h2 className="text-3xl font-black text-white tracking-widest uppercase mb-8">Role Applications</h2>
+              {roleApplications?.length === 0 ? (
+                <div className="glass-card p-20 rounded-[2.5rem] border border-dashed border-white/5 flex flex-col items-center justify-center text-white/10 mb-12">
+                  <div className="text-5xl mb-4">👨‍🔧</div>
+                  <p className="font-bold uppercase tracking-widest">No pending applications</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6 mb-12">
+                  {roleApplications?.map((app: any) => (
+                    <div key={app.id} className="glass-card p-8 rounded-[2rem] border border-white/5 hover:border-brand/30 transition-premium shadow-lg">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-6">
+                          <div className="text-4xl bg-white/5 p-4 rounded-2xl">
+                            {app.requestedRole === 'technician' ? '👨‍🔧' : '🚚'}
+                          </div>
+                          <div>
+                            <h4 className="text-xl font-bold text-white">{app.user?.name}</h4>
+                            <p className="text-white/40 text-xs font-black uppercase tracking-widest">
+                              Applying for: <span className="text-brand">{app.requestedRole}</span>
+                            </p>
+                            <p className="text-white/40 text-[10px] mt-1 italic">"{app.notes || 'No notes provided'}"</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4 items-center">
+                          {app.documents?.length > 0 && (
+                            <div className="flex gap-2 mr-4">
+                              {app.documents.map((doc: string, i: number) => (
+                                <a key={i} href={doc} target="_blank" rel="noreferrer" className="glass-card px-3 py-1 text-[10px] font-bold text-brand hover:text-white transition-premium">
+                                  Doc {i + 1}
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                          <button
+                            onClick={() => approveRoleApplicationMutation.mutate(app.id)}
+                            className="vibrant-gradient text-white px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-xl transition-premium"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              const reason = prompt('Enter rejection reason:');
+                              if (reason) rejectRoleApplicationMutation.mutate({ applicationId: app.id, reason });
+                            }}
+                            className="glass-card text-white/40 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest border border-white/5 hover:text-red-500 transition-premium"
+                          >
+                            Reject
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -362,6 +462,78 @@ const AdminDashboard: React.FC = () => {
           </section>
         )}
       </div>
+
+      {/* Gallery Modal */}
+      {selectedGalleryListing && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-canvas/90 backdrop-blur-2xl" onClick={() => setSelectedGalleryListing(null)}></div>
+          <div className="relative w-full max-w-5xl glass-card rounded-[3rem] border border-white/10 shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
+            <button
+              onClick={() => setSelectedGalleryListing(null)}
+              className="absolute top-8 right-8 text-white/40 hover:text-white transition-premium z-20"
+            >
+              <span className="text-3xl font-black">✕</span>
+            </button>
+
+            <div className="p-12 grid grid-cols-1 md:grid-cols-3 gap-12">
+              <div className="md:col-span-2 space-y-6">
+                <div className="aspect-video bg-white/5 rounded-[2rem] overflow-hidden border border-white/10 relative group">
+                  <img
+                    src={selectedGalleryListing.imageUrls?.[activeGalleryIndex]}
+                    alt="Full View"
+                    className="w-full h-full object-contain"
+                  />
+                  {selectedGalleryListing.imageUrls?.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setActiveGalleryIndex(prev => (prev === 0 ? selectedGalleryListing.imageUrls!.length - 1 : prev - 1))}
+                        className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl p-4 rounded-full text-white opacity-0 group-hover:opacity-100 transition-premium"
+                      >
+                        ←
+                      </button>
+                      <button
+                        onClick={() => setActiveGalleryIndex(prev => (prev === selectedGalleryListing.imageUrls!.length - 1 ? 0 : prev + 1))}
+                        className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl p-4 rounded-full text-white opacity-0 group-hover:opacity-100 transition-premium"
+                      >
+                        →
+                      </button>
+                    </>
+                  )}
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                  {selectedGalleryListing.imageUrls?.map((url: string, i: number) => (
+                    <div
+                      key={i}
+                      onClick={() => setActiveGalleryIndex(i)}
+                      className={`min-w-[100px] h-24 rounded-2xl overflow-hidden border cursor-pointer transition-premium ${activeGalleryIndex === i ? 'border-brand' : 'border-white/5 opacity-50'}`}
+                    >
+                      <img src={url} alt={`Thumb ${i}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col justify-center">
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-brand mb-4 block">Inspection Mode</span>
+                <h2 className="text-4xl font-black text-white mb-6 tracking-tighter">{selectedGalleryListing.device}</h2>
+                <div className="glass-card p-6 rounded-2xl border border-white/5 space-y-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Seller</p>
+                    <p className="text-white font-bold">{selectedGalleryListing.user?.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Category</p>
+                    <p className="text-white font-bold">{selectedGalleryListing.category || 'Standard'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Price</p>
+                    <p className="text-brand font-black text-2xl">${selectedGalleryListing.price}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

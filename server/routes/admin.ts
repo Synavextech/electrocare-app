@@ -7,18 +7,30 @@ import {
     getUsers,
     getPendingSales,
     getAllRepairs,
-    getWithdrawalRequests
+    getWithdrawalRequests,
+    rejectSale,
+    getPurchaseRequests,
+    approvePurchase,
+    getRoleApplications,
+    approveRoleApplication,
+    rejectRoleApplication
 } from '../controllers/admin';
 
 const router = express.Router();
 router.use(authMiddleware);
 
 router.post('/approve-sale', approveSale);
+router.post('/reject-sale', rejectSale);
 router.post('/approve-withdrawal', approveWithdrawal);
 router.get('/analytics', getAnalytics);
 router.get('/users', getUsers);
 router.get('/pending-sales', getPendingSales);
 router.get('/repairs', getAllRepairs);
 router.get('/withdrawal-requests', getWithdrawalRequests);
+router.get('/purchase-requests', getPurchaseRequests);
+router.post('/approve-purchase', approvePurchase);
+router.get('/role-applications', getRoleApplications);
+router.post('/approve-role-application', approveRoleApplication);
+router.post('/reject-role-application', rejectRoleApplication);
 
 export default router;

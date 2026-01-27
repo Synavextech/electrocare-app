@@ -1,4 +1,5 @@
 import { createContext, useState, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
+import apiClient from '../utils/apiClient';
 
 interface User {
   id: string;
@@ -28,6 +29,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await apiClient.get('/auth/me');
+        setUser(res.data.user);
+      } catch (err) {
+        console.error('Session verification failed', err);
+        localStorage.removeItem('user');
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       try {
@@ -36,7 +50,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error('Failed to parse user from local storage', e);
       }
     }
-    setLoading(false);
+
+    checkAuth();
   }, []);
 
   useEffect(() => {

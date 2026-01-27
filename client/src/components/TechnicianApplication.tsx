@@ -1,20 +1,24 @@
-import React from 'react';
-import { useMutation } from '@tanstack/react-query';
-import apiClient from '../utils/apiClient';
+import React, { useState } from 'react';
+import RoleApplicationModal from './RoleApplicationModal';
 
 const TechnicianApplication: React.FC = () => {
-  const mutation = useMutation({
-    mutationFn: () => apiClient.post('/recruitment/apply-technician'),
-    onSuccess: () => alert('Application submitted successfully!'),
-  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <button
-      onClick={() => mutation.mutate()}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-premium text-sm font-bold text-white/80"
-    >
-      <span className="text-lg">👨‍🔧</span> Apply: Technician
-    </button>
+    <>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg transition-premium text-sm font-bold text-white/80"
+      >
+        <span className="text-lg">👨‍🔧</span> Apply: Technician
+      </button>
+
+      <RoleApplicationModal
+        role="technician"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 };
 

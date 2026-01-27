@@ -16,9 +16,10 @@ interface Technician {
   shopId: string;
 }
 
-export const getTechniciansByShop = async (shopId: string) => {
+export const getTechniciansByShop = async (shopId?: string) => {
   const data = await fs.readFile(techniciansPath, 'utf8');
   const technicians: Technician[] = JSON.parse(data);
+  if (!shopId) return technicians;
   return technicians.filter(t => t.shopId === shopId);
 };
 

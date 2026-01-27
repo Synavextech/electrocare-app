@@ -30,12 +30,12 @@ const ScheduleRepair: React.FC = () => {
 
   const { data: deviceTypes } = useQuery({
     queryKey: ['deviceTypes'],
-    queryFn: () => apiClient.get('/api/device-types').then(res => res.data)
+    queryFn: () => apiClient.get('/device-types').then(res => res.data)
   });
 
   const { data: allModels } = useQuery({
     queryKey: ['deviceModels'],
-    queryFn: () => apiClient.get('/api/models').then(res => res.data)
+    queryFn: () => apiClient.get('/models').then(res => res.data)
   });
 
   const { data: shops, isLoading: shopsLoading } = useQuery({
@@ -287,6 +287,9 @@ const ScheduleRepair: React.FC = () => {
                     <div className="relative">
                       <select
                         {...register('device_model')}
+                        onChange={(e) => {
+                          setValue('device_model', e.target.value);
+                        }}
                         className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-premium text-white appearance-none cursor-pointer"
                       >
                         <option value="" className="bg-canvas text-white">Select Model...</option>
@@ -306,7 +309,9 @@ const ScheduleRepair: React.FC = () => {
                   <div className="animate-in slide-in-from-top-2 duration-300 space-y-2">
                     <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1">Enter Device Model Manually</label>
                     <input
-                      onChange={(e) => setValue('device_model', e.target.value)}
+                      onChange={(e) => {
+                        setValue('device_model', e.target.value);
+                      }}
                       placeholder="e.g. Custom Gaming PC, Legacy Device"
                       className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-premium text-white placeholder:text-white/20"
                     />

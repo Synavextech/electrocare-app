@@ -1,10 +1,42 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // Vite config for React SPA with TS, PWA, Tailwind (per electro.md)
 export default defineConfig({
-  plugins: [react(), TanStackRouterVite()], // Merged/single plugins key; add more if needed (e.g., vite-plugin-pwa if automated PWA)
+  plugins: [
+    react(),
+    TanStackRouterVite(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      manifest: {
+        name: 'ElectroCare TECH',
+        short_name: 'ElectroCare',
+        description: 'Precision. Reliability. Excellence. Precision repair and marketplace for your devices.',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      }
+    })
+  ],
   base: '/', // For cPanel public_html root
   server: {
     port: 3000, // Local dev port

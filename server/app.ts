@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
@@ -12,7 +13,11 @@ import marketplaceRoutes from './routes/marketplace';
 import uploadRoutes from './routes/upload';
 import walletRoutes from './routes/wallet';
 import recruitmentRoutes from './routes/recruitment';
-// Import other routes...
+import adminRoutes from './routes/admin';
+import notificationRoutes from './routes/notification';
+import shopRoutes from './routes/shop';
+import technicianRoutes from './routes/technician';
+import saleRoutes from './routes/sale';
 import authMiddleware from './middleware/auth';
 
 import { initSocket } from './socket';
@@ -60,6 +65,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
@@ -83,7 +89,11 @@ app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/recruitment', recruitmentRoutes);
-// Add /api/sales, /api/tracking, /api/admin, /api/shop, /api/technician similarly...
+app.use('/api/admin', authMiddleware, adminRoutes);
+app.use('/api/notifications', authMiddleware, notificationRoutes);
+app.use('/api/shops', shopRoutes); // plural as expected by frontend
+app.use('/api/technician', technicianRoutes);
+app.use('/api/sales', authMiddleware, saleRoutes);
 
 
 app.get('/api/device-types', async (req, res) => {
@@ -119,73 +129,7 @@ app.post('/api/admin/models', authMiddleware, async (req, res) => {
   }
 });
 
-// Shops endpoints
-app.get('/api/shops', async (req, res) => {
-  try {
-    const shopsPath = path.join(__dirname, 'shops.json');
-    const data = await fs.readFile(shopsPath, 'utf8');
-    res.json(JSON.parse(data));
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to load shops' });
-  }
-});
-
-app.get('/api/shops/nearby', async (req, res) => {
-  try {
-    const shopsPath = path.join(__dirname, 'shops.json');
-    const data = await fs.readFile(shopsPath, 'utf8');
-    res.json(JSON.parse(data));
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to load shops' });
-  }
-});
-
-app.get('/api/shops/closest', async (req, res) => {
-  try {
-    const { lat, lng } = req.query;
-    if (!lat || !lng) {
-      return res.status(400).json({ error: 'lat and lng are required' });
-    }
-    const shopsPath = path.join(__dirname, 'shops.json');
-    const data = await fs.readFile(shopsPath, 'utf8');
-    const shops: Shop[] = JSON.parse(data);
-    let closestShop = null;
-    let minDistance = Infinity;
-    shops.forEach((shop: Shop) => {
-      const distance = haversineDistance(parseFloat(lat as string), parseFloat(lng as string), shop.lat, shop.lng);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestShop = shop;
-      }
-    });
-    if (closestShop) {
-      res.json(closestShop);
-    } else {
-      res.status(404).json({ error: 'No shops found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to find closest shop' });
-  }
-});
-
-// Technician endpoints
-app.get('/api/technician', async (req, res) => {
-  try {
-    const { shopId } = req.query;
-    const techniciansPath = path.join(__dirname, 'technicians.json');
-    const data = await fs.readFile(techniciansPath, 'utf8');
-    let technicians = JSON.parse(data);
-
-    if (shopId) {
-      technicians = technicians.filter((t: any) => t.shopId === shopId);
-    }
-
-    res.json(technicians);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to load technicians' });
-  }
-});
-
+// Delivery personnel endpoint (kept inline for now as no route file exists)
 app.get('/api/delivery-personnel', async (req, res) => {
   try {
     const { shopId } = req.query;
