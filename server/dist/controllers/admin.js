@@ -1,13 +1,19 @@
-import { supabase } from '../db';
-import axios from 'axios';
-import { updateApplicationStatus } from '../models/roleApplication';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.rejectRoleApplication = exports.approveRoleApplication = exports.getRoleApplications = exports.approvePurchase = exports.getPurchaseRequests = exports.getWithdrawalRequests = exports.getAllRepairs = exports.getPendingSales = exports.getUsers = exports.getAnalytics = exports.approveWithdrawal = exports.rejectSale = exports.approveSale = void 0;
+const db_1 = require("../db");
+const axios_1 = __importDefault(require("axios"));
+const roleApplication_1 = require("../models/roleApplication");
 // Admin approves sales, awards points
-export const approveSale = async (req, res) => {
+const approveSale = async (req, res) => {
     try {
         if (!['admin', 'shop', 'technician'].includes(req.user?.role || ''))
             return res.status(403).json({ error: 'Forbidden' });
         const { saleId, points } = req.body;
-        const { data: sale, error } = await supabase
+        const { data: sale, error } = await db_1.supabase
             .from('DeviceSale')
             .update({ status: 'approved', pointsAwarded: points })
             .eq('id', saleId)
@@ -16,7 +22,7 @@ export const approveSale = async (req, res) => {
         if (error)
             throw error;
         if (sale.user?.wallet) {
-            await supabase.from('Wallet').update({
+            await db_1.supabase.from('Wallet').update({
                 points: sale.user.wallet.points + (points || 0)
             }).eq('id', sale.user.wallet.id);
         }
@@ -27,12 +33,13 @@ export const approveSale = async (req, res) => {
         res.status(500).json({ error: 'Approval failed' });
     }
 };
-export const rejectSale = async (req, res) => {
+exports.approveSale = approveSale;
+const rejectSale = async (req, res) => {
     try {
         if (!['admin', 'shop', 'technician'].includes(req.user?.role || ''))
             return res.status(403).json({ error: 'Forbidden' });
         const { saleId, reason } = req.body;
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('DeviceSale')
             .update({ status: 'rejected', rejectionReason: reason })
             .eq('id', saleId)
@@ -46,13 +53,14 @@ export const rejectSale = async (req, res) => {
         res.status(500).json({ error: 'Rejection failed' });
     }
 };
+exports.rejectSale = rejectSale;
 // Approve withdrawal via M-Pesa B2C
-export const approveWithdrawal = async (req, res) => {
+const approveWithdrawal = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
         const { userId, amount, phone } = req.body;
-        const { data: user } = await supabase
+        const { data: user } = await db_1.supabase
             .from('User')
             .select('*, wallet:Wallet(*)')
             .eq('id', userId)
@@ -60,11 +68,11 @@ export const approveWithdrawal = async (req, res) => {
         if (!user?.wallet || user.wallet.balance < amount)
             return res.status(400).json({ error: 'Insufficient balance' });
         // M-Pesa B2C API call (get access token first)
-        const tokenResponse = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
+        const tokenResponse = await axios_1.default.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
             auth: { username: process.env.MPESA_CONSUMER_KEY, password: process.env.MPESA_CONSUMER_SECRET },
         });
         const accessToken = tokenResponse.data.access_token;
-        const b2cResponse = await axios.post('https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest', {
+        const b2cResponse = await axios_1.default.post('https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest', {
             InitiatorName: 'testapi',
             SecurityCredential: process.env.MPESA_SECURITY_CREDENTIAL, // Generate via cert
             CommandID: 'BusinessPayment',
@@ -76,8 +84,8 @@ export const approveWithdrawal = async (req, res) => {
             ResultURL: 'https://your-callback/result',
             Occasion: 'ElectroCare Withdrawal',
         }, { headers: { Authorization: `Bearer ${accessToken} ` } });
-        await supabase.from('Transaction').insert({ walletId: user.wallet.id, type: 'withdrawal', amount });
-        await supabase.from('Wallet').update({ balance: user.wallet.balance - amount }).eq('id', user.wallet.id);
+        await db_1.supabase.from('Transaction').insert({ walletId: user.wallet.id, type: 'withdrawal', amount });
+        await db_1.supabase.from('Wallet').update({ balance: user.wallet.balance - amount }).eq('id', user.wallet.id);
         res.json(b2cResponse.data);
     }
     catch (err) {
@@ -85,13 +93,14 @@ export const approveWithdrawal = async (req, res) => {
         res.status(500).json({ error: 'Withdrawal failed' });
     }
 };
+exports.approveWithdrawal = approveWithdrawal;
 // Other admin: manage users, analytics (count repairs, etc.)
-export const getAnalytics = async (req, res) => {
+const getAnalytics = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
-        const { count: users } = await supabase.from('User').select('*', { count: 'exact', head: true });
-        const { count: repairs } = await supabase.from('RepairRequest').select('*', { count: 'exact', head: true });
+        const { count: users } = await db_1.supabase.from('User').select('*', { count: 'exact', head: true });
+        const { count: repairs } = await db_1.supabase.from('RepairRequest').select('*', { count: 'exact', head: true });
         res.json({ users, repairs });
     }
     catch (err) {
@@ -99,11 +108,12 @@ export const getAnalytics = async (req, res) => {
         res.status(500).json({ error: 'Analytics failed' });
     }
 };
-export const getUsers = async (req, res) => {
+exports.getAnalytics = getAnalytics;
+const getUsers = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
-        const { data, error } = await supabase.from('User').select('*, wallet:Wallet(*)');
+        const { data, error } = await db_1.supabase.from('User').select('*, wallet:Wallet(*)');
         if (error)
             throw error;
         res.json(data);
@@ -112,11 +122,12 @@ export const getUsers = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const getPendingSales = async (req, res) => {
+exports.getUsers = getUsers;
+const getPendingSales = async (req, res) => {
     try {
         if (!['admin', 'shop', 'technician'].includes(req.user?.role || ''))
             return res.status(403).json({ error: 'Forbidden' });
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('DeviceSale')
             .select('*, user:User(*)')
             .eq('status', 'pending');
@@ -128,11 +139,12 @@ export const getPendingSales = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const getAllRepairs = async (req, res) => {
+exports.getPendingSales = getPendingSales;
+const getAllRepairs = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('RepairRequest')
             .select('*, user:User(*)');
         if (error)
@@ -143,11 +155,12 @@ export const getAllRepairs = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const getWithdrawalRequests = async (req, res) => {
+exports.getAllRepairs = getAllRepairs;
+const getWithdrawalRequests = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('Transaction')
             .select('*, wallet:Wallet(User(*))')
             .eq('type', 'withdrawal_request'); // Assuming this type exists or will be used
@@ -159,11 +172,12 @@ export const getWithdrawalRequests = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const getPurchaseRequests = async (req, res) => {
+exports.getWithdrawalRequests = getWithdrawalRequests;
+const getPurchaseRequests = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('DevicePurchase')
             .select('*, buyer:User(*), sale:DeviceSale(*, user:User(*))')
             .eq('status', 'pending');
@@ -175,13 +189,14 @@ export const getPurchaseRequests = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const approvePurchase = async (req, res) => {
+exports.getPurchaseRequests = getPurchaseRequests;
+const approvePurchase = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
         const { purchaseId } = req.body;
         // 1. Get purchase details
-        const { data: purchase, error: pError } = await supabase
+        const { data: purchase, error: pError } = await db_1.supabase
             .from('DevicePurchase')
             .select('*, buyer:User(*), sale:DeviceSale(*)')
             .eq('id', purchaseId)
@@ -189,8 +204,8 @@ export const approvePurchase = async (req, res) => {
         if (pError || !purchase)
             throw pError || new Error('Purchase not found');
         // 2. Update status
-        await supabase.from('DevicePurchase').update({ status: 'approved' }).eq('id', purchaseId);
-        await supabase.from('DeviceSale').update({ status: 'sold' }).eq('id', purchase.saleId);
+        await db_1.supabase.from('DevicePurchase').update({ status: 'approved' }).eq('id', purchaseId);
+        await db_1.supabase.from('DeviceSale').update({ status: 'sold' }).eq('id', purchase.saleId);
         // 3. Logic for fund transfer could go here (e.g. updating wallets)
         // For now, just completing the status cycle.
         res.json({ success: true });
@@ -200,11 +215,12 @@ export const approvePurchase = async (req, res) => {
         res.status(500).json({ error: 'Approval failed' });
     }
 };
-export const getRoleApplications = async (req, res) => {
+exports.approvePurchase = approvePurchase;
+const getRoleApplications = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('RoleApplication')
             .select('*, user:User(*)')
             .eq('status', 'pending');
@@ -216,12 +232,13 @@ export const getRoleApplications = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const approveRoleApplication = async (req, res) => {
+exports.getRoleApplications = getRoleApplications;
+const approveRoleApplication = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
         const { applicationId } = req.body;
-        const { data: application, error: aError } = await supabase
+        const { data: application, error: aError } = await db_1.supabase
             .from('RoleApplication')
             .select('*')
             .eq('id', applicationId)
@@ -229,9 +246,9 @@ export const approveRoleApplication = async (req, res) => {
         if (aError || !application)
             throw aError || new Error('Application not found');
         // 1. Update application status
-        await updateApplicationStatus(applicationId, 'approved');
+        await (0, roleApplication_1.updateApplicationStatus)(applicationId, 'approved');
         // 2. Update user role
-        const { error: uError } = await supabase
+        const { error: uError } = await db_1.supabase
             .from('User')
             .update({ role: application.requestedRole })
             .eq('id', application.userId);
@@ -244,15 +261,16 @@ export const approveRoleApplication = async (req, res) => {
         res.status(500).json({ error: 'Approval failed' });
     }
 };
-export const rejectRoleApplication = async (req, res) => {
+exports.approveRoleApplication = approveRoleApplication;
+const rejectRoleApplication = async (req, res) => {
     try {
         if (req.user?.role !== 'admin')
             return res.status(403).json({ error: 'Forbidden' });
         const { applicationId, reason } = req.body;
-        await updateApplicationStatus(applicationId, 'rejected');
+        await (0, roleApplication_1.updateApplicationStatus)(applicationId, 'rejected');
         // Optionally log rejection reason in RoleApplication notes or another table
         if (reason) {
-            await supabase
+            await db_1.supabase
                 .from('RoleApplication')
                 .update({ notes: reason })
                 .eq('id', applicationId);
@@ -264,4 +282,5 @@ export const rejectRoleApplication = async (req, res) => {
         res.status(500).json({ error: 'Rejection failed' });
     }
 };
+exports.rejectRoleApplication = rejectRoleApplication;
 //# sourceMappingURL=admin.js.map

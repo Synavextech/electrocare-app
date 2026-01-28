@@ -6,7 +6,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { fileURLToPath } from 'url';
+import { initSocket } from './socket';
 import authRoutes from './routes/auth';
 import repairsRoutes from './routes/repairs';
 import marketplaceRoutes from './routes/marketplace';
@@ -20,10 +20,8 @@ import technicianRoutes from './routes/technician';
 import saleRoutes from './routes/sale';
 import authMiddleware from './middleware/auth';
 
-import { initSocket } from './socket';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const isDist = __dirname.endsWith('dist');
+const reqPath = isDist ? '../..' : '..';
 
 interface Shop {
   id: string;
@@ -45,7 +43,7 @@ interface Technician {
   shopId: string;
 }
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, reqPath) });
 const app = express();
 
 const allowedOrigins = [
@@ -71,15 +69,17 @@ app.use((req, res, next) => {
   next();
 });
 
+const distPath = path.join(__dirname, reqPath, 'dist');
+
 // Serve static files from dist
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.use(express.static(distPath));
 
 // Handle SPA routing
 app.get('*', (req, res, next) => {
   if (req.url.startsWith('/api')) {
     return next();
   }
-  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Routes

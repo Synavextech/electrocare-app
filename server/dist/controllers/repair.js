@@ -1,14 +1,17 @@
-import { createRepair, getRepairsByUser, updateRepair, RepairSchema } from '../models/repair';
-import { io } from '../app';
-export const scheduleRepair = async (req, res) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.acceptRepair = exports.updateRepairStatus = exports.getMyRepairs = exports.scheduleRepair = void 0;
+const repair_1 = require("../models/repair");
+const app_1 = require("../app");
+const scheduleRepair = async (req, res) => {
     try {
-        const data = RepairSchema.parse(req.body);
-        const repair = await createRepair({ ...data, userId: req.user.id });
+        const data = repair_1.RepairSchema.parse(req.body);
+        const repair = await (0, repair_1.createRepair)({ ...data, userId: req.user.id });
         // If delivery is requested, find closest delivery person (mock logic for now)
         if (repair.delivery) {
-            io.emit('delivery_request', { repairId: repair.id, location: 'user-location' });
+            app_1.io.emit('delivery_request', { repairId: repair.id, location: 'user-location' });
         }
-        io.emit('repair_update', { repairId: repair.id, status: 'pending' }); // Real-time
+        app_1.io.emit('repair_update', { repairId: repair.id, status: 'pending' }); // Real-time
         res.json(repair);
     }
     catch (err) {
@@ -16,9 +19,10 @@ export const scheduleRepair = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-export const getMyRepairs = async (req, res) => {
+exports.scheduleRepair = scheduleRepair;
+const getMyRepairs = async (req, res) => {
     try {
-        const repairs = await getRepairsByUser(req.user.id);
+        const repairs = await (0, repair_1.getRepairsByUser)(req.user.id);
         res.json(repairs);
     }
     catch (err) {
@@ -26,14 +30,15 @@ export const getMyRepairs = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const updateRepairStatus = async (req, res) => {
+exports.getMyRepairs = getMyRepairs;
+const updateRepairStatus = async (req, res) => {
     try {
         if (req.user?.role !== 'technician')
             return res.status(403).json({ error: 'Forbidden' });
         const { id } = req.params;
         const { status } = req.body;
-        const repair = await updateRepair(id, { status });
-        io.emit('repair_update', { repairId: repair.id, status }); // WebSocket notify user
+        const repair = await (0, repair_1.updateRepair)(id, { status });
+        app_1.io.emit('repair_update', { repairId: repair.id, status }); // WebSocket notify user
         res.json(repair);
     }
     catch (err) {
@@ -41,7 +46,8 @@ export const updateRepairStatus = async (req, res) => {
         res.status(500).json({ error: 'Update failed' });
     }
 };
-export const acceptRepair = async (req, res) => {
+exports.updateRepairStatus = updateRepairStatus;
+const acceptRepair = async (req, res) => {
     try {
         const { id } = req.params;
         const { cost, estimatedTime } = req.body;
@@ -62,8 +68,8 @@ export const acceptRepair = async (req, res) => {
             updates.cost = 100; // Standard delivery price
             updates.status = 'in_transit'; // Or custom status for pickup
         }
-        const repair = await updateRepair(id, updates);
-        io.emit('repair_update', { repairId: repair.id, status: updates.status, cost: updates.cost });
+        const repair = await (0, repair_1.updateRepair)(id, updates);
+        app_1.io.emit('repair_update', { repairId: repair.id, status: updates.status, cost: updates.cost });
         res.json(repair);
     }
     catch (err) {
@@ -71,4 +77,5 @@ export const acceptRepair = async (req, res) => {
         res.status(500).json({ error: 'Accept repair failed' });
     }
 };
+exports.acceptRepair = acceptRepair;
 //# sourceMappingURL=repair.js.map

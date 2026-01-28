@@ -1,12 +1,15 @@
-import { createTransaction, getTransactionsByUser } from '../models/wallet';
-import { getUserById } from '../models/user';
-import { supabase } from '../db';
-export const getWallet = async (req, res) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.topUpWallet = exports.redeemElectroCoins = exports.requestWithdrawal = exports.redeemPoints = exports.getWallet = void 0;
+const wallet_1 = require("../models/wallet");
+const user_1 = require("../models/user");
+const db_1 = require("../db");
+const getWallet = async (req, res) => {
     try {
-        const user = await getUserById(req.user.id);
+        const user = await (0, user_1.getUserById)(req.user.id);
         if (!user?.wallet)
             return res.status(404).json({ error: 'Wallet not found' });
-        const transactions = await getTransactionsByUser(req.user.id);
+        const transactions = await (0, wallet_1.getTransactionsByUser)(req.user.id);
         res.json({
             balance: user.wallet.balance,
             points: user.wallet.points,
@@ -19,12 +22,13 @@ export const getWallet = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const redeemPoints = async (req, res) => {
+exports.getWallet = getWallet;
+const redeemPoints = async (req, res) => {
     try {
-        const user = await getUserById(req.user.id);
+        const user = await (0, user_1.getUserById)(req.user.id);
         if (!user?.wallet || user.wallet.points < 10)
             return res.status(400).json({ error: 'Insufficient points' });
-        const { error } = await supabase
+        const { error } = await db_1.supabase
             .from('Wallet')
             .update({
             points: user.wallet.points - 10,
@@ -33,7 +37,7 @@ export const redeemPoints = async (req, res) => {
             .eq('userId', user.id);
         if (error)
             throw error;
-        await createTransaction({ walletId: user.wallet.id, type: 'redeem', amount: 10 });
+        await (0, wallet_1.createTransaction)({ walletId: user.wallet.id, type: 'redeem', amount: 10 });
         res.json({ success: true });
     }
     catch (err) {
@@ -41,13 +45,14 @@ export const redeemPoints = async (req, res) => {
         res.status(500).json({ error: 'Redeem failed' });
     }
 };
-export const requestWithdrawal = async (req, res) => {
+exports.redeemPoints = redeemPoints;
+const requestWithdrawal = async (req, res) => {
     try {
         const { amount, method } = req.body; // method: 'mpesa', 'bank', etc.
         if (!amount || !method) {
             return res.status(400).json({ error: 'Amount and withdrawal method required' });
         }
-        const user = await getUserById(req.user.id);
+        const user = await (0, user_1.getUserById)(req.user.id);
         if (!user?.wallet)
             return res.status(404).json({ error: 'Wallet not found' });
         // Validate minimum withdrawal
@@ -59,7 +64,7 @@ export const requestWithdrawal = async (req, res) => {
             return res.status(400).json({ error: 'Insufficient balance' });
         }
         // Create withdrawal request (pending admin approval)
-        const tx = await createTransaction({
+        const tx = await (0, wallet_1.createTransaction)({
             walletId: user.wallet.id,
             type: `withdrawal_${method}`, // e.g., 'withdrawal_mpesa'
             amount
@@ -71,11 +76,12 @@ export const requestWithdrawal = async (req, res) => {
         res.status(500).json({ error: 'Request failed' });
     }
 };
+exports.requestWithdrawal = requestWithdrawal;
 // Redeem Electro-Coins for cash (Admin controlled)
-export const redeemElectroCoins = async (req, res) => {
+const redeemElectroCoins = async (req, res) => {
     try {
         const { amount } = req.body; // Amount of coins to redeem
-        const user = await getUserById(req.user.id);
+        const user = await (0, user_1.getUserById)(req.user.id);
         if (!user?.wallet)
             return res.status(404).json({ error: 'Wallet not found' });
         // Check sufficient coins
@@ -85,7 +91,7 @@ export const redeemElectroCoins = async (req, res) => {
         // Conversion rate: 1 coin = $1 (or as per business logic)
         const cashValue = amount;
         // Deduct coins and add to balance
-        const { error } = await supabase
+        const { error } = await db_1.supabase
             .from('Wallet')
             .update({
             electroCoins: (user.wallet.electroCoins || 0) - amount,
@@ -94,7 +100,7 @@ export const redeemElectroCoins = async (req, res) => {
             .eq('userId', user.id);
         if (error)
             throw error;
-        await createTransaction({
+        await (0, wallet_1.createTransaction)({
             walletId: user.wallet.id,
             type: 'electro_coin_redemption',
             amount: cashValue
@@ -106,15 +112,16 @@ export const redeemElectroCoins = async (req, res) => {
         res.status(500).json({ error: 'Redemption failed' });
     }
 };
-export const topUpWallet = async (req, res) => {
+exports.redeemElectroCoins = redeemElectroCoins;
+const topUpWallet = async (req, res) => {
     try {
         const { amount } = req.body;
         if (!amount || amount <= 0)
             return res.status(400).json({ error: 'Invalid amount' });
-        const user = await getUserById(req.user.id);
+        const user = await (0, user_1.getUserById)(req.user.id);
         if (!user?.wallet)
             return res.status(404).json({ error: 'Wallet not found' });
-        const { data: wallet, error } = await supabase
+        const { data: wallet, error } = await db_1.supabase
             .from('Wallet')
             .update({ balance: user.wallet.balance + amount })
             .eq('userId', user.id)
@@ -122,7 +129,7 @@ export const topUpWallet = async (req, res) => {
             .single();
         if (error)
             throw error;
-        await createTransaction({
+        await (0, wallet_1.createTransaction)({
             walletId: user.wallet.id,
             type: 'top_up',
             amount
@@ -134,4 +141,5 @@ export const topUpWallet = async (req, res) => {
         res.status(500).json({ error: 'Top-up failed' });
     }
 };
+exports.topUpWallet = topUpWallet;
 //# sourceMappingURL=wallet.js.map

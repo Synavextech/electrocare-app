@@ -1,10 +1,13 @@
-import { getTechniciansByShop } from '../models/technician';
-import { updateRepair } from '../models/repair';
-import { supabase } from '../db';
-export const listTechnicians = async (req, res) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.acceptRepair = exports.getMyAssignments = exports.listTechnicians = void 0;
+const technician_1 = require("../models/technician");
+const repair_1 = require("../models/repair");
+const db_1 = require("../db");
+const listTechnicians = async (req, res) => {
     try {
         const { shopId } = req.query;
-        const technicians = await getTechniciansByShop(shopId);
+        const technicians = await (0, technician_1.getTechniciansByShop)(shopId);
         res.json(technicians);
     }
     catch (err) {
@@ -12,11 +15,12 @@ export const listTechnicians = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const getMyAssignments = async (req, res) => {
+exports.listTechnicians = listTechnicians;
+const getMyAssignments = async (req, res) => {
     try {
         if (req.user?.role !== 'technician')
             return res.status(403).json({ error: 'Forbidden' });
-        const { data: repairs, error } = await supabase
+        const { data: repairs, error } = await db_1.supabase
             .from('RepairRequest')
             .select('*')
             .eq('technicianId', req.user.id);
@@ -29,13 +33,14 @@ export const getMyAssignments = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
+exports.getMyAssignments = getMyAssignments;
 // Accept repair
-export const acceptRepair = async (req, res) => {
+const acceptRepair = async (req, res) => {
     try {
         if (req.user?.role !== 'technician')
             return res.status(403).json({ error: 'Forbidden' });
         const { id } = req.params;
-        const repair = await updateRepair(id, { technicianId: req.user.id, status: 'in_progress' });
+        const repair = await (0, repair_1.updateRepair)(id, { technicianId: req.user.id, status: 'in_progress' });
         res.json(repair);
     }
     catch (err) {
@@ -43,4 +48,5 @@ export const acceptRepair = async (req, res) => {
         res.status(500).json({ error: 'Accept failed' });
     }
 };
+exports.acceptRepair = acceptRepair;
 //# sourceMappingURL=technician.js.map

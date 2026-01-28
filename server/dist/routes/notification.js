@@ -1,9 +1,14 @@
-import express from 'express';
-import authMiddleware from '../middleware/auth';
-import { sendNotification, broadcastNotification } from '../controllers/notification';
-const router = express.Router();
-router.use(authMiddleware);
-router.post('/', sendNotification);
-router.post('/broadcast', broadcastNotification);
-export default router;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = __importDefault(require("../middleware/auth"));
+const notification_1 = require("../controllers/notification");
+const router = express_1.default.Router();
+router.use(auth_1.default);
+router.post('/', notification_1.sendNotification);
+router.post('/broadcast', notification_1.broadcastNotification);
+exports.default = router;
 //# sourceMappingURL=notification.js.map

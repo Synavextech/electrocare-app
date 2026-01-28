@@ -40,7 +40,7 @@ export default defineConfig({
   base: '/', // For cPanel public_html root
   server: {
     port: 3000, // Local dev port
-    open: true, // Auto-open browser in VS Code
+    open: false, // Disable auto-open in production/headless
   },
   build: {
     outDir: '../dist', // Build to root dist

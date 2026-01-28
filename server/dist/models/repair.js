@@ -1,16 +1,19 @@
-import { supabase } from '../db';
-import { z } from 'zod';
-export const RepairSchema = z.object({
-    device_type: z.string(),
-    device_model: z.string().optional(),
-    issue: z.string(),
-    delivery: z.boolean().optional(),
-    shopId: z.string().optional(),
-    technicianId: z.string().optional(),
-    deliveryPersonnelId: z.string().optional(),
-    paymentMethod: z.enum(['online', 'cod']).optional(),
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.updateRepair = exports.getRepairById = exports.getRepairsByUser = exports.createRepair = exports.RepairSchema = void 0;
+const db_1 = require("../db");
+const zod_1 = require("zod");
+exports.RepairSchema = zod_1.z.object({
+    device_type: zod_1.z.string(),
+    device_model: zod_1.z.string().optional(),
+    issue: zod_1.z.string(),
+    delivery: zod_1.z.boolean().optional(),
+    shopId: zod_1.z.string().optional(),
+    technicianId: zod_1.z.string().optional(),
+    deliveryPersonnelId: zod_1.z.string().optional(),
+    paymentMethod: zod_1.z.enum(['online', 'cod']).optional(),
 });
-export const createRepair = async (data) => {
+const createRepair = async (data) => {
     // Generate Device Serialization: EC/YYYYMMDD/NNN
     const date = new Date();
     const yyyy = date.getFullYear();
@@ -20,7 +23,7 @@ export const createRepair = async (data) => {
     // Get count of repairs for today to determine NNN
     const startOfDay = new Date(date.setHours(0, 0, 0, 0)).toISOString();
     const endOfDay = new Date(date.setHours(23, 59, 59, 999)).toISOString();
-    const { count, error: countError } = await supabase
+    const { count, error: countError } = await db_1.supabase
         .from('RepairRequest')
         .select('*', { count: 'exact', head: true })
         .gte('createdAt', startOfDay)
@@ -34,7 +37,7 @@ export const createRepair = async (data) => {
     if (data.paymentMethod === 'online') {
         discount = 10; // 10% discount logic
     }
-    const { data: repair, error } = await supabase
+    const { data: repair, error } = await db_1.supabase
         .from('RepairRequest')
         .insert({
         request_id,
@@ -56,8 +59,9 @@ export const createRepair = async (data) => {
         throw error;
     return repair;
 };
-export const getRepairsByUser = async (userId) => {
-    const { data, error } = await supabase
+exports.createRepair = createRepair;
+const getRepairsByUser = async (userId) => {
+    const { data, error } = await db_1.supabase
         .from('RepairRequest')
         .select('*')
         .eq('userId', userId);
@@ -65,8 +69,9 @@ export const getRepairsByUser = async (userId) => {
         throw error;
     return data;
 };
-export const getRepairById = async (id) => {
-    const { data, error } = await supabase
+exports.getRepairsByUser = getRepairsByUser;
+const getRepairById = async (id) => {
+    const { data, error } = await db_1.supabase
         .from('RepairRequest')
         .select('*')
         .eq('id', id)
@@ -75,8 +80,9 @@ export const getRepairById = async (id) => {
         throw error;
     return data;
 };
-export const updateRepair = async (id, data) => {
-    const { data: repair, error } = await supabase
+exports.getRepairById = getRepairById;
+const updateRepair = async (id, data) => {
+    const { data: repair, error } = await db_1.supabase
         .from('RepairRequest')
         .update(data)
         .eq('id', id)
@@ -86,4 +92,5 @@ export const updateRepair = async (id, data) => {
         throw error;
     return repair;
 };
+exports.updateRepair = updateRepair;
 //# sourceMappingURL=repair.js.map

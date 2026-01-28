@@ -1,22 +1,26 @@
-import { supabase } from '../db';
-import { z } from 'zod';
-export const UserSchema = z.object({
-    name: z.string(),
-    email: z.string().email(),
-    phone: z.string(),
-    password: z.string().min(8),
-    role: z.enum(['user', 'technician', 'delivery', 'admin', 'shop']).optional(),
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.updateUser = exports.getUserById = exports.getUserByEmail = exports.createUser = exports.UserSchema = void 0;
+const db_1 = require("../db");
+const zod_1 = require("zod");
+exports.UserSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    email: zod_1.z.string().email(),
+    phone: zod_1.z.string(),
+    password: zod_1.z.string().min(8),
+    role: zod_1.z.enum(['user', 'technician', 'delivery', 'admin', 'shop']).optional(),
 });
-export const createUser = async (data) => {
+const createUser = async (data) => {
     // This is now handled by Supabase Auth and Triggers.
     // But if we need to manually create a user (e.g. admin creating another admin), we use service role.
     // For normal signup, the controller should use supabase.auth.signUp
     // This function might be used by the seed script or tests.
     // We'll assume it's for creating a profile if it doesn't exist, or just returning the profile.
-    return getUserByEmail(data.email);
+    return (0, exports.getUserByEmail)(data.email);
 };
-export const getUserByEmail = async (email) => {
-    const { data, error } = await supabase
+exports.createUser = createUser;
+const getUserByEmail = async (email) => {
+    const { data, error } = await db_1.supabase
         .from('User')
         .select('*, wallet:Wallet(*)')
         .eq('email', email)
@@ -25,8 +29,9 @@ export const getUserByEmail = async (email) => {
         return null;
     return data;
 };
-export const getUserById = async (id) => {
-    const { data, error } = await supabase
+exports.getUserByEmail = getUserByEmail;
+const getUserById = async (id) => {
+    const { data, error } = await db_1.supabase
         .from('User')
         .select('*, wallet:Wallet(*)')
         .eq('id', id)
@@ -35,8 +40,9 @@ export const getUserById = async (id) => {
         return null;
     return data;
 };
-export const updateUser = async (id, data) => {
-    const { data: updatedUser, error } = await supabase
+exports.getUserById = getUserById;
+const updateUser = async (id, data) => {
+    const { data: updatedUser, error } = await db_1.supabase
         .from('User')
         .update({
         name: data.name,
@@ -51,4 +57,5 @@ export const updateUser = async (id, data) => {
         throw error;
     return updatedUser;
 };
+exports.updateUser = updateUser;
 //# sourceMappingURL=user.js.map

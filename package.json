@@ -10,11 +10,12 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "cd client && vite",
-    "dev:server": "cd server && nodemon --exec \"npx tsx app.ts\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && nodemon --exec 'tsx app.ts'",
     "build": "npm run build:client && npm run build:server",
-    "build:client": "cd client && tsc && vite build",
-    "build:server": "cd server && tsc"
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && tsc",
+    "start": "NODE_ENV=production node server/dist/app.js"
   },
   "dependencies": {
     "@googlemaps/react-wrapper": "^1.0.0",

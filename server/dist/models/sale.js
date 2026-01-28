@@ -1,15 +1,18 @@
-import { supabase } from '../db';
-import { z } from 'zod';
-export const SaleSchema = z.object({
-    device: z.string(),
-    price: z.number(),
-    description: z.string().optional(),
-    condition: z.string().optional(),
-    imageUrl: z.string().optional(),
-    serialNumber: z.string().optional(),
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.updateSale = exports.getSalesByUser = exports.createSale = exports.SaleSchema = void 0;
+const db_1 = require("../db");
+const zod_1 = require("zod");
+exports.SaleSchema = zod_1.z.object({
+    device: zod_1.z.string(),
+    price: zod_1.z.number(),
+    description: zod_1.z.string().optional(),
+    condition: zod_1.z.string().optional(),
+    imageUrl: zod_1.z.string().optional(),
+    serialNumber: zod_1.z.string().optional(),
 });
-export const createSale = async (data) => {
-    const { data: sale, error } = await supabase
+const createSale = async (data) => {
+    const { data: sale, error } = await db_1.supabase
         .from('DeviceSale')
         .insert({
         userId: data.userId,
@@ -26,8 +29,9 @@ export const createSale = async (data) => {
         throw error;
     return sale;
 };
-export const getSalesByUser = async (userId) => {
-    const { data, error } = await supabase
+exports.createSale = createSale;
+const getSalesByUser = async (userId) => {
+    const { data, error } = await db_1.supabase
         .from('DeviceSale')
         .select('*')
         .eq('userId', userId);
@@ -35,8 +39,9 @@ export const getSalesByUser = async (userId) => {
         throw error;
     return data;
 };
-export const updateSale = async (id, data) => {
-    const { data: sale, error } = await supabase
+exports.getSalesByUser = getSalesByUser;
+const updateSale = async (id, data) => {
+    const { data: sale, error } = await db_1.supabase
         .from('DeviceSale')
         .update(data)
         .eq('id', id)
@@ -46,5 +51,6 @@ export const updateSale = async (id, data) => {
         throw error;
     return sale;
 };
+exports.updateSale = updateSale;
 // On approval, award points to user via updateUser
 //# sourceMappingURL=sale.js.map

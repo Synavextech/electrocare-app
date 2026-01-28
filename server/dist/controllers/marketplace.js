@@ -1,8 +1,11 @@
-import { supabase } from '../db';
-import { createListing, getListings, ListingSchema } from '../models/marketplace';
-export const listListings = async (req, res) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.purchaseListing = exports.postListing = exports.listListings = void 0;
+const db_1 = require("../db");
+const marketplace_1 = require("../models/marketplace");
+const listListings = async (req, res) => {
     try {
-        const listings = await getListings();
+        const listings = await (0, marketplace_1.getListings)();
         res.json(listings);
     }
     catch (err) {
@@ -10,10 +13,11 @@ export const listListings = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-export const postListing = async (req, res) => {
+exports.listListings = listListings;
+const postListing = async (req, res) => {
     try {
-        const data = ListingSchema.parse(req.body);
-        const listing = await createListing({ ...data, userId: req.user.id }, req.user.role || 'user');
+        const data = marketplace_1.ListingSchema.parse(req.body);
+        const listing = await (0, marketplace_1.createListing)({ ...data, userId: req.user.id }, req.user.role || 'user');
         res.json(listing);
     }
     catch (err) {
@@ -21,10 +25,11 @@ export const postListing = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-export const purchaseListing = async (req, res) => {
+exports.postListing = postListing;
+const purchaseListing = async (req, res) => {
     try {
         const { saleId } = req.body;
-        const { data, error } = await supabase
+        const { data, error } = await db_1.supabase
             .from('DevicePurchase')
             .insert({
             saleId,
@@ -43,4 +48,5 @@ export const purchaseListing = async (req, res) => {
         res.status(500).json({ error: 'Purchase failed' });
     }
 };
+exports.purchaseListing = purchaseListing;
 //# sourceMappingURL=marketplace.js.map

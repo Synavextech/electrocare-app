@@ -1,21 +1,27 @@
-import { supabase } from '../db';
-import { UserSchema } from '../models/user';
-import nodemailer from 'nodemailer';
-const transporter = nodemailer.createTransport({
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMe = exports.logout = exports.forgotPassword = exports.handleReferral = exports.login = exports.register = void 0;
+const db_1 = require("../db");
+const user_1 = require("../models/user");
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const transporter = nodemailer_1.default.createTransport({
     host: process.env.SMTP_HOST,
     port: 587,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
 });
-export const register = async (req, res) => {
+const register = async (req, res) => {
     try {
-        const data = UserSchema.parse(req.body);
+        const data = user_1.UserSchema.parse(req.body);
         // Create user directly using Supabase Admin Client (Service Role)
         // Note: Use signUp if you want to trigger email confirmation flow as usual, 
         // or admin.createUser to skip confirmation if needed (but usually signUp is better for client flows).
         // However, since this is a backend proxy, we might want to just proxy the signUp.
         // If we use service role key in 'supabase' client (from db.ts), we have admin privileges.
         // Let's use signUp.
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        const { data: authData, error: authError } = await db_1.supabase.auth.signUp({
             email: data.email,
             password: data.password,
             options: {
@@ -40,7 +46,7 @@ export const register = async (req, res) => {
         // Let's check if the trigger exists. The schema had a comment about removing trigger.
         // So we MUST manually create the public.User record here.
         // Wait for a moment or just upsert.
-        const { error: profileError } = await supabase
+        const { error: profileError } = await db_1.supabase
             .from('User')
             .upsert({
             id: authData.user.id,
@@ -57,7 +63,7 @@ export const register = async (req, res) => {
         }
         // Handle referral if present
         if (req.body.referralCode) {
-            await handleReferral(req.body.referralCode, authData.user.id);
+            await (0, exports.handleReferral)(req.body.referralCode, authData.user.id);
         }
         // Send welcome email
         // Check if transporter is configured properly, otherwise this might throw
@@ -87,17 +93,18 @@ export const register = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-export const login = async (req, res) => {
+exports.register = register;
+const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await db_1.supabase.auth.signInWithPassword({
             email,
             password,
         });
         if (error)
             return res.status(401).json({ error: error.message });
         // Fetch profile to get role
-        const { data: profile } = await supabase
+        const { data: profile } = await db_1.supabase
             .from('User')
             .select('*')
             .eq('id', data.user.id)
@@ -116,31 +123,33 @@ export const login = async (req, res) => {
         res.status(500).json({ error: 'Login failed' });
     }
 };
-export const handleReferral = async (referrerCode, referredId) => {
-    const { data: referrer } = await supabase
+exports.login = login;
+const handleReferral = async (referrerCode, referredId) => {
+    const { data: referrer } = await db_1.supabase
         .from('User')
         .select('*, wallet:Wallet(*)')
         .eq('referralCode', referrerCode)
         .single();
     if (referrer) {
         // Create referral record
-        await supabase.from('Referral').insert({
+        await db_1.supabase.from('Referral').insert({
             referrerId: referrer.id,
             refereeId: referredId,
             status: 'completed'
         });
         // Award 5% bonus points (5 points flat)
         if (referrer.wallet) {
-            await supabase.from('Wallet').update({
+            await db_1.supabase.from('Wallet').update({
                 points: referrer.wallet.points + 5
             }).eq('id', referrer.wallet.id);
         }
     }
 };
-export const forgotPassword = async (req, res) => {
+exports.handleReferral = handleReferral;
+const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        const { error } = await db_1.supabase.auth.resetPasswordForEmail(email, {
             redirectTo: 'http://localhost:3000/reset-password',
         });
         if (error)
@@ -152,20 +161,23 @@ export const forgotPassword = async (req, res) => {
         res.status(500).json({ error: 'Failed to send reset email' });
     }
 };
-export const logout = async (req, res) => {
+exports.forgotPassword = forgotPassword;
+const logout = async (req, res) => {
     res.clearCookie('access_token');
     res.json({ message: 'Logged out successfully' });
 };
-export const getMe = async (req, res) => {
+exports.logout = logout;
+const getMe = async (req, res) => {
     if (!req.user)
         return res.status(401).json({ error: 'Unauthorized' });
     // req.user is set by authMiddleware
     // Fetch full profile
-    const { data: profile } = await supabase
+    const { data: profile } = await db_1.supabase
         .from('User')
         .select('*')
         .eq('id', req.user.id)
         .single();
     res.json({ user: { ...req.user, ...profile } });
 };
+exports.getMe = getMe;
 //# sourceMappingURL=auth.js.map

@@ -1,4 +1,7 @@
-export function validate(schema) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.validate = validate;
+function validate(schema) {
     return (req, res, next) => {
         try {
             schema.parse(req.body);

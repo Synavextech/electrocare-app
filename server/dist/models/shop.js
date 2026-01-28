@@ -1,21 +1,24 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { z } from 'zod';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const shopsPath = path.join(__dirname, '..', 'shops.json');
-export const ShopSchema = z.object({
-    name: z.string(),
-    address: z.string(),
-    lat: z.number(),
-    lng: z.number(),
-    county: z.string(),
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getNearbyShops = exports.getShops = exports.createShop = exports.ShopSchema = void 0;
+const promises_1 = __importDefault(require("fs/promises"));
+const path_1 = __importDefault(require("path"));
+const zod_1 = require("zod");
+const shopsPath = path_1.default.join(__dirname, '..', 'shops.json');
+exports.ShopSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    address: zod_1.z.string(),
+    lat: zod_1.z.number(),
+    lng: zod_1.z.number(),
+    county: zod_1.z.string(),
 });
-export const createShop = async (data) => {
+const createShop = async (data) => {
     let shops = [];
     try {
-        const shopsData = await fs.readFile(shopsPath, 'utf8');
+        const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
         shops = JSON.parse(shopsData);
     }
     catch (error) {
@@ -45,25 +48,28 @@ export const createShop = async (data) => {
         updatedAt: new Date(),
     };
     shops.push(newShop);
-    await fs.writeFile(shopsPath, JSON.stringify(shops, null, 2));
+    await promises_1.default.writeFile(shopsPath, JSON.stringify(shops, null, 2));
     return newShop;
 };
-export const getShops = async () => {
+exports.createShop = createShop;
+const getShops = async () => {
     try {
-        const shopsData = await fs.readFile(shopsPath, 'utf8');
+        const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
         return JSON.parse(shopsData);
     }
     catch (error) {
         return [];
     }
 };
-export const getNearbyShops = async (location) => {
+exports.getShops = getShops;
+const getNearbyShops = async (location) => {
     try {
-        const shopsData = await fs.readFile(shopsPath, 'utf8');
+        const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
         return JSON.parse(shopsData);
     }
     catch (error) {
         return [];
     }
 };
+exports.getNearbyShops = getNearbyShops;
 //# sourceMappingURL=shop.js.map

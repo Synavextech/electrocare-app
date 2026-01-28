@@ -1,5 +1,8 @@
-import { supabase } from '../db';
-export const uploadImage = async (req, res) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.uploadImage = void 0;
+const db_1 = require("../db");
+const uploadImage = async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
@@ -8,7 +11,7 @@ export const uploadImage = async (req, res) => {
         const fileExt = file.originalname.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `marketplace/${fileName}`;
-        const { data, error } = await supabase.storage
+        const { data, error } = await db_1.supabase.storage
             .from('device-media')
             .upload(filePath, file.buffer, {
             contentType: file.mimetype,
@@ -16,7 +19,7 @@ export const uploadImage = async (req, res) => {
         });
         if (error)
             throw error;
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = db_1.supabase.storage
             .from('device-media')
             .getPublicUrl(filePath);
         res.json({ imageUrl: publicUrl });
@@ -26,4 +29,5 @@ export const uploadImage = async (req, res) => {
         res.status(500).json({ error: 'Upload failed' });
     }
 };
+exports.uploadImage = uploadImage;
 //# sourceMappingURL=upload.js.map
