@@ -30,18 +30,21 @@ const reqPath = isDist ? '../..' : '..';
 dotenv_1.default.config({ path: path_1.default.join(__dirname, reqPath) });
 const app = (0, express_1.default)();
 exports.app = app;
-const allowedOrigins = [
-    'http://127.0.0.1:3000',
-    'http://localhost:3000',
-    'http://127.0.0.1:3001',
-    'http://localhost:3001'
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : [
+        'http://127.0.0.1:3000',
+        'http://localhost:3000',
+        'http://127.0.0.1:3001',
+        'http://localhost:3001'
+    ];
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         }
         else {
+            console.warn(`CORS Rejecting Origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
