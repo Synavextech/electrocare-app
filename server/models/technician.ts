@@ -1,7 +1,8 @@
-import path from 'path';
 import fs from 'fs/promises';
-const techniciansPath = path.join(__dirname, '..', 'technicians.json');
-const shopsPath = path.join(__dirname, '..', 'shops.json');
+import { DATA_PATHS } from '../utils/paths';
+
+const techniciansPath = DATA_PATHS.technicians;
+const shopsPath = DATA_PATHS.shops;
 
 interface Technician {
   id: string;

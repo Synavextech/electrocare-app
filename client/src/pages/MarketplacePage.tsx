@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearch } from '@tanstack/react-router';
 import apiClient from '../utils/apiClient';
@@ -54,6 +55,9 @@ const MarketplacePage: React.FC = () => {
       reset();
       setUploadedUrls([]);
     },
+    onError: (err: any) => {
+      alert(err.response?.data?.error || 'Failed to post listing. Please try again.');
+    }
   });
 
   const purchaseMutation = useMutation({

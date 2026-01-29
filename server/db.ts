@@ -8,10 +8,9 @@ import path from 'path';
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
-const isDist = __dirname.endsWith('dist');
-const reqPath = isDist ? '../..' : '..';
+import { resolveFromRoot } from './utils/paths';
 
-dotenv.config({ path: path.join(__dirname, reqPath, '.env') });
+dotenv.config({ path: resolveFromRoot('.env') });
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;

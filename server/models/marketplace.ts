@@ -45,7 +45,7 @@ export const createListing = async (data: any, userRole: string) => {
 
     // Validate permissions
     if ((data.condition === 'New' || data.condition === 'Refurbished') && userRole !== 'admin' && userRole !== 'shop') {
-        throw new Error('Only Admin and Shops can post New or Refurbished items.');
+        throw new Error('Only Admin and Certified Shops can post New or Refurbished phones. Please contact a nearby shop for certification or to post on your behalf.');
     }
 
     // Ensure device is set

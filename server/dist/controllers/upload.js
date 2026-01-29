@@ -17,16 +17,18 @@ const uploadImage = async (req, res) => {
             contentType: file.mimetype,
             upsert: false,
         });
-        if (error)
+        if (error) {
+            console.error('Supabase Storage Error:', JSON.stringify(error, null, 2));
             throw error;
+        }
         const { data: { publicUrl } } = db_1.supabase.storage
             .from('device-media')
             .getPublicUrl(filePath);
         res.json({ imageUrl: publicUrl });
     }
     catch (err) {
-        console.error('Upload failed:', err.message);
-        res.status(500).json({ error: 'Upload failed' });
+        console.error('Upload failed details:', err);
+        res.status(500).json({ error: err.message || 'Upload failed' });
     }
 };
 exports.uploadImage = uploadImage;

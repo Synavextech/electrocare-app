@@ -25,10 +25,10 @@ const shop_1 = __importDefault(require("./routes/shop"));
 const technician_1 = __importDefault(require("./routes/technician"));
 const sale_1 = __importDefault(require("./routes/sale"));
 const auth_2 = __importDefault(require("./middleware/auth"));
+const paths_1 = require("./utils/paths");
 const isDist = __dirname.endsWith('dist');
 const reqPath = isDist ? '../..' : '..';
-const rootDir = isDist ? path_1.default.join(__dirname, '../../') : path_1.default.join(__dirname, '../');
-dotenv_1.default.config({ path: path_1.default.join(rootDir, '.env') });
+dotenv_1.default.config({ path: (0, paths_1.resolveFromRoot)('.env') });
 const app = (0, express_1.default)();
 exports.app = app;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -58,7 +58,7 @@ app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next();
 });
-const distPath = path_1.default.join(__dirname, reqPath, 'dist');
+const distPath = (0, paths_1.resolveFromRoot)('dist');
 // Serve static files from dist
 app.use(express_1.default.static(distPath));
 // Handle SPA routing
@@ -82,8 +82,7 @@ app.use('/api/technician', technician_1.default);
 app.use('/api/sales', auth_2.default, sale_1.default);
 app.get('/api/device-types', async (req, res) => {
     try {
-        const typesPath = path_1.default.join(__dirname, 'repairabledevices.json');
-        const data = await promises_1.default.readFile(typesPath, 'utf8');
+        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.repairableDevices, 'utf8');
         res.json(JSON.parse(data));
     }
     catch (error) {
@@ -92,8 +91,7 @@ app.get('/api/device-types', async (req, res) => {
 });
 app.get('/api/models', async (req, res) => {
     try {
-        const modelsPath = path_1.default.join(__dirname, 'repairableModels.json');
-        const data = await promises_1.default.readFile(modelsPath, 'utf8');
+        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.repairableModels, 'utf8');
         res.json(JSON.parse(data));
     }
     catch (error) {
@@ -105,8 +103,7 @@ app.post('/api/admin/models', auth_2.default, async (req, res) => {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ error: 'Unauthorized' });
         }
-        const modelsPath = path_1.default.join(__dirname, 'repairableModels.json');
-        await promises_1.default.writeFile(modelsPath, JSON.stringify(req.body, null, 2));
+        await promises_1.default.writeFile(paths_1.DATA_PATHS.repairableModels, JSON.stringify(req.body, null, 2));
         res.json({ message: 'Models updated successfully' });
     }
     catch (error) {
@@ -117,8 +114,7 @@ app.post('/api/admin/models', auth_2.default, async (req, res) => {
 app.get('/api/delivery-personnel', async (req, res) => {
     try {
         const { shopId } = req.query;
-        const dpPath = path_1.default.join(__dirname, 'deliverypersonnel.json');
-        const data = await promises_1.default.readFile(dpPath, 'utf8');
+        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.deliveryPersonnel, 'utf8');
         let personnel = JSON.parse(data);
         if (shopId) {
             personnel = personnel.filter((p) => p.shopId === shopId);
@@ -135,8 +131,7 @@ app.post('/api/technicians', auth_2.default, async (req, res) => {
         if (req.user.role !== 'admin')
             return res.status(403).json({ error: 'Unauthorized' });
         const { name, phone, isTrained, referral, shopId } = req.body;
-        const techniciansPath = path_1.default.join(__dirname, 'technicians.json');
-        const data = await promises_1.default.readFile(techniciansPath, 'utf8');
+        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.technicians, 'utf8');
         const technicians = JSON.parse(data);
         const newTechnician = {
             id: crypto.randomUUID(),
@@ -147,7 +142,7 @@ app.post('/api/technicians', auth_2.default, async (req, res) => {
             shopId
         };
         technicians.push(newTechnician);
-        await promises_1.default.writeFile(techniciansPath, JSON.stringify(technicians, null, 2));
+        await promises_1.default.writeFile(paths_1.DATA_PATHS.technicians, JSON.stringify(technicians, null, 2));
         res.json(newTechnician);
     }
     catch (error) {
@@ -157,8 +152,7 @@ app.post('/api/technicians', auth_2.default, async (req, res) => {
 // Shop services endpoints
 app.get('/api/shop/:id/services', async (req, res) => {
     try {
-        const shopsPath = path_1.default.join(__dirname, 'shops.json');
-        const data = await promises_1.default.readFile(shopsPath, 'utf8');
+        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.shops, 'utf8');
         const shops = JSON.parse(data);
         const shop = shops.find(s => s.id === req.params.id);
         if (!shop)
@@ -171,8 +165,7 @@ app.get('/api/shop/:id/services', async (req, res) => {
 });
 app.post('/api/shop/:id/services', auth_2.default, async (req, res) => {
     try {
-        const shopsPath = path_1.default.join(__dirname, 'shops.json');
-        const data = await promises_1.default.readFile(shopsPath, 'utf8');
+        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.shops, 'utf8');
         const shops = JSON.parse(data);
         const shopIndex = shops.findIndex(s => s.id === req.params.id);
         if (shopIndex === -1) {
@@ -186,7 +179,7 @@ app.post('/api/shop/:id/services', auth_2.default, async (req, res) => {
         }
         const { models } = req.body;
         shops[shopIndex].services = models;
-        await promises_1.default.writeFile(shopsPath, JSON.stringify(shops, null, 2));
+        await promises_1.default.writeFile(paths_1.DATA_PATHS.shops, JSON.stringify(shops, null, 2));
         res.json({ message: 'Services updated' });
     }
     catch (error) {

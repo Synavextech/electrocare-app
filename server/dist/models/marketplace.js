@@ -18,7 +18,7 @@ const createListing = async (data, userRole) => {
     console.log('Creating listing with data:', JSON.stringify(data, null, 2));
     // Validate permissions
     if ((data.condition === 'New' || data.condition === 'Refurbished') && userRole !== 'admin' && userRole !== 'shop') {
-        throw new Error('Only Admin and Shops can post New or Refurbished items.');
+        throw new Error('Only Admin and Certified Shops can post New or Refurbished phones. Please contact a nearby shop for certification or to post on your behalf.');
     }
     // Ensure device is set
     const deviceName = data.title || data.device;

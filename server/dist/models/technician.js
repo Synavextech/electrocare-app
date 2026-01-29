@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTechnician = exports.getTechnicianById = exports.getTechniciansByShop = void 0;
-const path_1 = __importDefault(require("path"));
 const promises_1 = __importDefault(require("fs/promises"));
-const techniciansPath = path_1.default.join(__dirname, '..', 'technicians.json');
-const shopsPath = path_1.default.join(__dirname, '..', 'shops.json');
+const paths_1 = require("../utils/paths");
+const techniciansPath = paths_1.DATA_PATHS.technicians;
+const shopsPath = paths_1.DATA_PATHS.shops;
 const getTechniciansByShop = async (shopId) => {
     const data = await promises_1.default.readFile(techniciansPath, 'utf8');
     const technicians = JSON.parse(data);

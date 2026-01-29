@@ -19,7 +19,10 @@ export const uploadImage = async (req: Request, res: Response) => {
                 upsert: false,
             });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase Storage Error:', JSON.stringify(error, null, 2));
+            throw error;
+        }
 
         const { data: { publicUrl } } = supabase.storage
             .from('device-media')
@@ -27,7 +30,7 @@ export const uploadImage = async (req: Request, res: Response) => {
 
         res.json({ imageUrl: publicUrl });
     } catch (err) {
-        console.error('Upload failed:', (err as Error).message);
-        res.status(500).json({ error: 'Upload failed' });
+        console.error('Upload failed details:', err);
+        res.status(500).json({ error: (err as Error).message || 'Upload failed' });
     }
 };

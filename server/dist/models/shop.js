@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNearbyShops = exports.getShops = exports.createShop = exports.ShopSchema = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
-const path_1 = __importDefault(require("path"));
 const zod_1 = require("zod");
-const shopsPath = path_1.default.join(__dirname, '..', 'shops.json');
+const paths_1 = require("../utils/paths");
+const shopsPath = paths_1.DATA_PATHS.shops;
 exports.ShopSchema = zod_1.z.object({
     name: zod_1.z.string(),
     address: zod_1.z.string(),

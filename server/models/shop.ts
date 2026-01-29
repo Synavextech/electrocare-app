@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
-import path from 'path';
 import { z } from 'zod';
+import { DATA_PATHS } from '../utils/paths';
 
-const shopsPath = path.join(__dirname, '..', 'shops.json');
+const shopsPath = DATA_PATHS.shops;
 
 export interface Shop {
   id: string;

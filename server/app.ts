@@ -19,6 +19,7 @@ import shopRoutes from './routes/shop';
 import technicianRoutes from './routes/technician';
 import saleRoutes from './routes/sale';
 import authMiddleware from './middleware/auth';
+import { DATA_PATHS, resolveFromRoot } from './utils/paths';
 
 const isDist = __dirname.endsWith('dist');
 const reqPath = isDist ? '../..' : '..';
@@ -43,8 +44,7 @@ interface Technician {
   shopId: string;
 }
 
-const rootDir = isDist ? path.join(__dirname, '../../') : path.join(__dirname, '../');
-dotenv.config({ path: path.join(rootDir, '.env') });
+dotenv.config({ path: resolveFromRoot('.env') });
 const app = express();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -76,7 +76,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const distPath = path.join(__dirname, reqPath, 'dist');
+const distPath = resolveFromRoot('dist');
 
 // Serve static files from dist
 app.use(express.static(distPath));
@@ -105,8 +105,7 @@ app.use('/api/sales', authMiddleware, saleRoutes);
 
 app.get('/api/device-types', async (req, res) => {
   try {
-    const typesPath = path.join(__dirname, 'repairabledevices.json');
-    const data = await fs.readFile(typesPath, 'utf8');
+    const data = await fs.readFile(DATA_PATHS.repairableDevices, 'utf8');
     res.json(JSON.parse(data));
   } catch (error) {
     res.status(500).json({ error: 'Failed to load device types' });
@@ -115,8 +114,7 @@ app.get('/api/device-types', async (req, res) => {
 
 app.get('/api/models', async (req, res) => {
   try {
-    const modelsPath = path.join(__dirname, 'repairableModels.json');
-    const data = await fs.readFile(modelsPath, 'utf8');
+    const data = await fs.readFile(DATA_PATHS.repairableModels, 'utf8');
     res.json(JSON.parse(data));
   } catch (error) {
     res.status(500).json({ error: 'Failed to load models' });
@@ -128,8 +126,7 @@ app.post('/api/admin/models', authMiddleware, async (req, res) => {
     if (req.user!.role !== 'admin') {
       return res.status(403).json({ error: 'Unauthorized' });
     }
-    const modelsPath = path.join(__dirname, 'repairableModels.json');
-    await fs.writeFile(modelsPath, JSON.stringify(req.body, null, 2));
+    await fs.writeFile(DATA_PATHS.repairableModels, JSON.stringify(req.body, null, 2));
     res.json({ message: 'Models updated successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update models' });
@@ -140,8 +137,7 @@ app.post('/api/admin/models', authMiddleware, async (req, res) => {
 app.get('/api/delivery-personnel', async (req, res) => {
   try {
     const { shopId } = req.query;
-    const dpPath = path.join(__dirname, 'deliverypersonnel.json');
-    const data = await fs.readFile(dpPath, 'utf8');
+    const data = await fs.readFile(DATA_PATHS.deliveryPersonnel, 'utf8');
     let personnel = JSON.parse(data);
 
     if (shopId) {
@@ -160,8 +156,7 @@ app.post('/api/technicians', authMiddleware, async (req, res) => {
     if (req.user!.role !== 'admin') return res.status(403).json({ error: 'Unauthorized' });
 
     const { name, phone, isTrained, referral, shopId } = req.body;
-    const techniciansPath = path.join(__dirname, 'technicians.json');
-    const data = await fs.readFile(techniciansPath, 'utf8');
+    const data = await fs.readFile(DATA_PATHS.technicians, 'utf8');
     const technicians: Technician[] = JSON.parse(data);
 
     const newTechnician: Technician = {
@@ -174,7 +169,7 @@ app.post('/api/technicians', authMiddleware, async (req, res) => {
     };
 
     technicians.push(newTechnician);
-    await fs.writeFile(techniciansPath, JSON.stringify(technicians, null, 2));
+    await fs.writeFile(DATA_PATHS.technicians, JSON.stringify(technicians, null, 2));
     res.json(newTechnician);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create technician' });
@@ -184,8 +179,7 @@ app.post('/api/technicians', authMiddleware, async (req, res) => {
 // Shop services endpoints
 app.get('/api/shop/:id/services', async (req, res) => {
   try {
-    const shopsPath = path.join(__dirname, 'shops.json');
-    const data = await fs.readFile(shopsPath, 'utf8');
+    const data = await fs.readFile(DATA_PATHS.shops, 'utf8');
     const shops: Shop[] = JSON.parse(data);
     const shop = shops.find(s => s.id === req.params.id);
     if (!shop) return res.status(404).json({ error: 'Shop not found' });
@@ -197,8 +191,7 @@ app.get('/api/shop/:id/services', async (req, res) => {
 
 app.post('/api/shop/:id/services', authMiddleware, async (req, res) => {
   try {
-    const shopsPath = path.join(__dirname, 'shops.json');
-    const data = await fs.readFile(shopsPath, 'utf8');
+    const data = await fs.readFile(DATA_PATHS.shops, 'utf8');
     const shops: Shop[] = JSON.parse(data);
     const shopIndex = shops.findIndex(s => s.id === req.params.id);
 
@@ -215,7 +208,7 @@ app.post('/api/shop/:id/services', authMiddleware, async (req, res) => {
     const { models } = req.body;
     shops[shopIndex].services = models;
 
-    await fs.writeFile(shopsPath, JSON.stringify(shops, null, 2));
+    await fs.writeFile(DATA_PATHS.shops, JSON.stringify(shops, null, 2));
     res.json({ message: 'Services updated' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update services' });
