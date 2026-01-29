@@ -27,7 +27,8 @@ const sale_1 = __importDefault(require("./routes/sale"));
 const auth_2 = __importDefault(require("./middleware/auth"));
 const isDist = __dirname.endsWith('dist');
 const reqPath = isDist ? '../..' : '..';
-dotenv_1.default.config({ path: path_1.default.join(__dirname, reqPath) });
+const rootDir = isDist ? path_1.default.join(__dirname, '../../') : path_1.default.join(__dirname, '../');
+dotenv_1.default.config({ path: path_1.default.join(rootDir, '.env') });
 const app = (0, express_1.default)();
 exports.app = app;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -38,6 +39,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
         'http://127.0.0.1:3001',
         'http://localhost:3001'
     ];
+console.log('Allowed Origins:', allowedOrigins);
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {

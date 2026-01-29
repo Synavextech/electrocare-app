@@ -43,7 +43,8 @@ interface Technician {
   shopId: string;
 }
 
-dotenv.config({ path: path.join(__dirname, reqPath) });
+const rootDir = isDist ? path.join(__dirname, '../../') : path.join(__dirname, '../');
+dotenv.config({ path: path.join(rootDir, '.env') });
 const app = express();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -54,6 +55,8 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     'http://127.0.0.1:3001',
     'http://localhost:3001'
   ];
+
+console.log('Allowed Origins:', allowedOrigins);
 
 app.use(cors({
   origin: (origin, callback) => {

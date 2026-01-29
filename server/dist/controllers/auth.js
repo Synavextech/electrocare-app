@@ -149,8 +149,9 @@ exports.handleReferral = handleReferral;
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
+        const baseUrl = process.env.API_URL || 'https://electrocare.tech';
         const { error } = await db_1.supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'http://localhost:3000/reset-password',
+            redirectTo: `${baseUrl}/reset-password`,
         });
         if (error)
             return res.status(400).json({ error: error.message });
