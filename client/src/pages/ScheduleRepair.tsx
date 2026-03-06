@@ -33,9 +33,12 @@ const ScheduleRepair: React.FC = () => {
     queryFn: () => apiClient.get('/device-types').then(res => res.data)
   });
 
+  const selectedDeviceTypeId = deviceTypes?.find((t: any) => t.name === selectedDeviceType)?.id;
+
   const { data: allModels } = useQuery({
-    queryKey: ['deviceModels'],
-    queryFn: () => apiClient.get('/models').then(res => res.data)
+    queryKey: ['deviceModels', selectedDeviceTypeId],
+    queryFn: () => apiClient.get(`/models${selectedDeviceTypeId ? `?deviceTypeId=${selectedDeviceTypeId}` : ''}`).then(res => res.data),
+    enabled: !!deviceTypes
   });
 
   const { data: shops, isLoading: shopsLoading } = useQuery({

@@ -1,53 +1,61 @@
-import fs from 'fs/promises';
-import { DATA_PATHS } from '../utils/paths';
+import { supabase } from '../db';
 
-const techniciansPath = DATA_PATHS.technicians;
-const shopsPath = DATA_PATHS.shops;
-
-interface Technician {
+export interface Technician {
   id: string;
   name: string;
+  description: string;
   phone: string;
-  isTrained: boolean;
-  referral: string;
+  email: string;
+  rating: number;
+  reviews: number;
+  category: string;
+  subCategory: string;
   shopId: string;
+  createdAt: string;
 }
 
 export const getTechniciansByShop = async (shopId?: string) => {
-  const data = await fs.readFile(techniciansPath, 'utf8');
-  const technicians: Technician[] = JSON.parse(data);
-  if (!shopId) return technicians;
-  return technicians.filter(t => t.shopId === shopId);
+  let query = supabase.from('Technicians').select('*');
+  if (shopId) {
+    query = query.eq('shopId', shopId);
+  }
+  const { data, error } = await query;
+  if (error) {
+    console.error('getTechniciansByShop Error:', error);
+    throw error;
+  }
+  return data as Technician[];
 };
 
 export const getTechnicianById = async (id: string) => {
-  const data = await fs.readFile(techniciansPath, 'utf8');
-  const technicians: Technician[] = JSON.parse(data);
-  return technicians.find(t => t.id === id) || null;
+  const { data, error } = await supabase
+    .from('Technicians')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (error) {
+    console.error('getTechnicianById Error:', error);
+    return null;
+  }
+  return data as Technician;
 };
 
-export const createTechnician = async (data: { userId: string }) => {
-  // This function seems to be for auto-creating a technician profile?
-  // Or maybe it was intended to link a user to a technician profile.
-  // For now, I'll implement it to add to the JSON file.
+export const createTechnician = async (data: Partial<Technician>) => {
+  const { data: newTech, error } = await supabase
+    .from('Technicians')
+    .insert([
+      {
+        ...data,
+        rating: data.rating || 4.5,
+        reviews: data.reviews || 0,
+      }
+    ])
+    .select()
+    .single();
 
-  const shopsData = await fs.readFile(shopsPath, 'utf8');
-  const shops = JSON.parse(shopsData);
-  const shop = shops[0]; // Assign to first shop
-
-  const techniciansData = await fs.readFile(techniciansPath, 'utf8');
-  const technicians: Technician[] = JSON.parse(techniciansData);
-
-  const newTechnician: Technician = {
-    id: crypto.randomUUID(),
-    name: 'Pending',
-    phone: 'Pending',
-    isTrained: false,
-    referral: 'Pending',
-    shopId: shop ? shop.id : 'unknown',
-  };
-
-  technicians.push(newTechnician);
-  await fs.writeFile(techniciansPath, JSON.stringify(technicians, null, 2));
-  return newTechnician;
+  if (error) {
+    console.error('createTechnician Error:', error);
+    throw error;
+  }
+  return newTech as Technician;
 };

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.initSocket = initSocket;
-function initSocket(io) {
+export function initSocket(io) {
     io.on('connection', (socket) => {
         console.log('User connected');
         socket.on('joinRepair', async (repairId) => {

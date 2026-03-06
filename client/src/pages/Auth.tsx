@@ -40,8 +40,15 @@ const Auth: React.FC = () => {
     if (mode === 'login') {
       login(data as LoginFormData, {
         onSuccess: (responseData: any) => {
-          if (responseData.user?.role === 'admin') {
+          const role = responseData.user?.role;
+          if (role === 'admin') {
             navigate({ to: '/admin' });
+          } else if (role === 'technician') {
+            navigate({ to: '/technician' });
+          } else if (role === 'delivery') {
+            navigate({ to: '/delivery' });
+          } else if (role === 'shop') {
+            navigate({ to: '/shop' });
           } else {
             navigate({ to: '/home' });
           }
@@ -53,8 +60,15 @@ const Auth: React.FC = () => {
     } else if (mode === 'register') {
       registerUser(data as RegisterFormData, {
         onSuccess: (responseData: any) => {
-          if (responseData.user?.role === 'admin') {
+          const role = responseData.user?.role;
+          if (role === 'admin') {
             navigate({ to: '/admin' });
+          } else if (role === 'technician') {
+            navigate({ to: '/technician' });
+          } else if (role === 'delivery') {
+            navigate({ to: '/delivery' });
+          } else if (role === 'shop') {
+            navigate({ to: '/shop' });
           } else {
             navigate({ to: '/home' });
           }

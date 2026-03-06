@@ -33,8 +33,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await apiClient.get('/auth/me');
         setUser(res.data.user);
-      } catch (err) {
-        console.error('Session verification failed', err);
+      } catch (err: any) {
+        // Silently handle expected auth failures (401, 404)
+        const status = err?.response?.status;
+        if (status !== 401 && status !== 404) {
+          console.error('Session verification failed', err);
+        }
         localStorage.removeItem('user');
         setUser(null);
       } finally {

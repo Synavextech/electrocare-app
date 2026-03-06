@@ -3,10 +3,7 @@
         "target": "ESNext",
         "module": "ESNext",
         "lib": [
-            "ESNext",
-            "DOM",
-            "deno.window",
-            "deno.ns"
+            "ESNext"
         ],
         "strict": true,
         "allowJs": true,

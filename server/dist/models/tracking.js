@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTrackingLog = exports.getTrackingByRepair = void 0;
-const db_1 = require("../db");
-const getTrackingByRepair = async (repairRequestId) => {
-    const { data, error } = await db_1.supabase
+import { supabase } from '../db';
+export const getTrackingByRepair = async (repairRequestId) => {
+    const { data, error } = await supabase
         .from('Tracking')
         .select('*')
         .eq('repairRequestId', repairRequestId);
@@ -11,9 +8,8 @@ const getTrackingByRepair = async (repairRequestId) => {
         throw error;
     return data;
 };
-exports.getTrackingByRepair = getTrackingByRepair;
-const createTrackingLog = async (data) => {
-    const { data: log, error } = await db_1.supabase
+export const createTrackingLog = async (data) => {
+    const { data: log, error } = await supabase
         .from('Tracking')
         .insert({
         repairRequestId: data.repairId,
@@ -25,5 +21,4 @@ const createTrackingLog = async (data) => {
         throw error;
     return log;
 };
-exports.createTrackingLog = createTrackingLog;
 //# sourceMappingURL=tracking.js.map

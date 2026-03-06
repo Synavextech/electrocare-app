@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateApplicationStatus = exports.getPendingApplications = exports.createApplication = void 0;
-const db_1 = require("../db");
-const createApplication = async (data) => {
-    const { data: application, error } = await db_1.supabase
+import { supabase } from '../db';
+export const createApplication = async (data) => {
+    const { data: application, error } = await supabase
         .from('RoleApplication')
         .insert([
         {
@@ -20,9 +17,8 @@ const createApplication = async (data) => {
         throw error;
     return application;
 };
-exports.createApplication = createApplication;
-const getPendingApplications = async () => {
-    const { data, error } = await db_1.supabase
+export const getPendingApplications = async () => {
+    const { data, error } = await supabase
         .from('RoleApplication')
         .select('*, user:User(*)')
         .eq('status', 'pending');
@@ -30,9 +26,8 @@ const getPendingApplications = async () => {
         throw error;
     return data;
 };
-exports.getPendingApplications = getPendingApplications;
-const updateApplicationStatus = async (id, status) => {
-    const { data, error } = await db_1.supabase
+export const updateApplicationStatus = async (id, status) => {
+    const { data, error } = await supabase
         .from('RoleApplication')
         .update({ status, updatedAt: new Date() })
         .eq('id', id)
@@ -42,5 +37,4 @@ const updateApplicationStatus = async (id, status) => {
         throw error;
     return data;
 };
-exports.updateApplicationStatus = updateApplicationStatus;
 //# sourceMappingURL=roleApplication.js.map

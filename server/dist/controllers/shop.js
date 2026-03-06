@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerShop = exports.getNearby = exports.listShops = void 0;
-const shop_1 = require("../models/shop");
-const listShops = async (req, res) => {
+import { getNearbyShops, getShops, createShop, ShopSchema } from '../models/shop';
+export const listShops = async (req, res) => {
     try {
-        const shops = await (0, shop_1.getShops)();
+        const shops = await getShops();
         res.json(shops);
     }
     catch (err) {
@@ -12,11 +9,10 @@ const listShops = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-exports.listShops = listShops;
-const getNearby = async (req, res) => {
+export const getNearby = async (req, res) => {
     try {
         const { location } = req.query;
-        const shops = await (0, shop_1.getNearbyShops)(location);
+        const shops = await getNearbyShops(location);
         res.json(shops);
     }
     catch (err) {
@@ -24,12 +20,11 @@ const getNearby = async (req, res) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
-exports.getNearby = getNearby;
-const registerShop = async (req, res) => {
+export const registerShop = async (req, res) => {
     try {
         // Assuming admin check is done in middleware
-        const data = shop_1.ShopSchema.parse(req.body);
-        const shop = await (0, shop_1.createShop)(data);
+        const data = ShopSchema.parse(req.body);
+        const shop = await createShop(data);
         res.json(shop);
     }
     catch (err) {
@@ -37,5 +32,4 @@ const registerShop = async (req, res) => {
         res.status(500).json({ error: 'Registration failed' });
     }
 };
-exports.registerShop = registerShop;
 //# sourceMappingURL=shop.js.map

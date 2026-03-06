@@ -7,15 +7,15 @@ export declare const SaleSchema: z.ZodObject<{
     imageUrl: z.ZodOptional<z.ZodString>;
     serialNumber: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    price: number;
     device: string;
+    price: number;
     description?: string | undefined;
     condition?: string | undefined;
     imageUrl?: string | undefined;
     serialNumber?: string | undefined;
 }, {
-    price: number;
     device: string;
+    price: number;
     description?: string | undefined;
     condition?: string | undefined;
     imageUrl?: string | undefined;

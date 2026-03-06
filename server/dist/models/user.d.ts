@@ -23,13 +23,13 @@ export declare const UserSchema: z.ZodObject<{
     email: string;
     phone: string;
     password: string;
-    role?: "user" | "technician" | "delivery" | "admin" | "shop" | undefined;
+    role?: "user" | "admin" | "technician" | "delivery" | "shop" | undefined;
 }, {
     name: string;
     email: string;
     phone: string;
     password: string;
-    role?: "user" | "technician" | "delivery" | "admin" | "shop" | undefined;
+    role?: "user" | "admin" | "technician" | "delivery" | "shop" | undefined;
 }>;
 export declare const createUser: (data: any) => Promise<any>;
 export declare const getUserByEmail: (email: string) => Promise<any>;

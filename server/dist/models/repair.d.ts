@@ -32,18 +32,18 @@ export declare const RepairSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     device_type: string;
     issue: string;
+    shopId?: string | undefined;
     delivery?: boolean | undefined;
     device_model?: string | undefined;
-    shopId?: string | undefined;
     technicianId?: string | undefined;
     deliveryPersonnelId?: string | undefined;
     paymentMethod?: "online" | "cod" | undefined;
 }, {
     device_type: string;
     issue: string;
+    shopId?: string | undefined;
     delivery?: boolean | undefined;
     device_model?: string | undefined;
-    shopId?: string | undefined;
     technicianId?: string | undefined;
     deliveryPersonnelId?: string | undefined;
     paymentMethod?: "online" | "cod" | undefined;

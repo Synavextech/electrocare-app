@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { createRepair, getRepairById, updateRepair } from '../models/repair';
 import { scheduleRepair, getMyRepairs, acceptRepair } from '../controllers/repair';
 import authMiddleware from '../middleware/auth';
+import { roleCheck } from '../middleware/roleCheck';
 
 const router = express.Router();
 
@@ -24,12 +25,8 @@ const repairSchema = z.object({
 });
 
 // GET /repairs/assigned: Fetch repairs assigned to delivery person
-router.get('/assigned', authMiddleware, async (req, res) => {
+router.get('/assigned', authMiddleware, roleCheck(['delivery', 'admin', 'shop']), async (req, res) => {
   try {
-    if (req.user!.role !== 'delivery' && req.user!.role !== 'admin') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
     // In a real app, we'd filter by the specific delivery person's ID linked to this user
     // For now, return all repairs that have a deliveryPersonnelId set
     const { data, error } = await supabase
@@ -46,12 +43,8 @@ router.get('/assigned', authMiddleware, async (req, res) => {
 });
 
 // GET /repairs/tech-assigned: Fetch repairs assigned to technician
-router.get('/tech-assigned', authMiddleware, async (req, res) => {
+router.get('/tech-assigned', authMiddleware, roleCheck(['technician', 'admin', 'shop']), async (req, res) => {
   try {
-    if (req.user!.role !== 'technician' && req.user!.role !== 'admin') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
     const { data, error } = await supabase
       .from('RepairRequest')
       .select('*')

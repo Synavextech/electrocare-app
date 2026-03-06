@@ -42,6 +42,7 @@ const RoleApplicationModal: React.FC<RoleApplicationModalProps> = ({ role, isOpe
             for (const file of files) {
                 const formData = new FormData();
                 formData.append('image', file);
+                formData.append('folder', 'documents');
                 const { data } = await apiClient.post('/upload', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });

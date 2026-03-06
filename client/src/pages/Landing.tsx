@@ -1,9 +1,32 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 import Footer from '../components/Footer';
 import useAuth from '../hooks/useAuth';
+import apiClient from '../utils/apiClient';
 
 const Landing = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
+
+    // Fetch marketplace listings
+    const { data: marketplaceListings, isLoading: isLoadingMarketplace } = useQuery({
+        queryKey: ['marketplace-preview'],
+        queryFn: async () => {
+            const res = await apiClient.get('/marketplace');
+            const data = Array.isArray(res.data) ? res.data : [];
+            return data.slice(0, 6);
+        },
+        staleTime: 60000, // Cache for 1 minute
+    });
+
+    const handlePurchaseAttempt = () => {
+        if (!user) {
+            navigate({ to: '/login' });
+        } else {
+            navigate({ to: '/marketplace' });
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans">
             {/* Hero Section */}
@@ -50,6 +73,93 @@ const Landing = () => {
                             ))}
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* Marketplace Preview Section */}
+            <section className="w-full bg-gradient-to-b from-gray-50 to-white py-24">
+                <div className="container mx-auto px-4">
+                    <div className="flex flex-col items-center mb-16 text-center">
+                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter mb-4">
+                            Shop <span className="text-primary">Marketplace</span>
+                        </h2>
+                        <p className="text-lg text-gray-600 max-w-2xl mb-2">
+                            Discover verified devices from our trusted community and certified shops.
+                        </p>
+                        <div className="w-24 h-2 bg-primary rounded-full"></div>
+                    </div>
+
+                    {isLoadingMarketplace ? (
+                        <div className="flex justify-center items-center py-20">
+                            <div className="text-center">
+                                <div className="text-6xl mb-4 animate-pulse">🛒</div>
+                                <p className="text-xl font-bold text-gray-400 uppercase tracking-widest">Loading Marketplace...</p>
+                            </div>
+                        </div>
+                    ) : marketplaceListings && marketplaceListings.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                                {marketplaceListings.map((listing: any) => (
+                                    <div
+                                        key={listing.id}
+                                        className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group cursor-pointer border border-gray-100"
+                                        onClick={() => handlePurchaseAttempt()}
+                                    >
+                                        <div className="h-64 bg-gray-100 relative overflow-hidden">
+                                            {listing.imageUrls && listing.imageUrls.length > 0 ? (
+                                                <img
+                                                    src={listing.imageUrls[0]}
+                                                    alt={listing.device}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <span className="text-6xl opacity-30">📱</span>
+                                                </div>
+                                            )}
+                                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full">
+                                                <span className="text-xs font-black uppercase tracking-widest text-primary">
+                                                    {listing.condition}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="p-6">
+                                            <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">
+                                                {listing.device}
+                                            </h3>
+                                            <p className="text-sm text-gray-500 uppercase tracking-wider mb-4">
+                                                {listing.category || 'Electronics'}
+                                            </p>
+                                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                                                {listing.description}
+                                            </p>
+                                            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                                                <span className="text-3xl font-black text-primary">
+                                                    ${listing.price}
+                                                </span>
+                                                <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:shadow-lg">
+                                                    {user ? 'View Details' : 'Login to Buy'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="text-center">
+                                <Link to="/marketplace">
+                                    <button className="bg-gray-900 hover:bg-primary text-white px-12 py-5 rounded-full uppercase tracking-widest text-sm font-bold transition-all duration-500 border-2 border-gray-900 hover:border-primary shadow-lg hover:shadow-2xl">
+                                        View All Listings →
+                                    </button>
+                                </Link>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center py-20">
+                            <div className="text-6xl mb-4">📦</div>
+                            <p className="text-xl font-bold text-gray-400 uppercase tracking-widest">No listings available yet</p>
+                            <p className="text-gray-500 mt-2">Check back soon for amazing deals!</p>
+                        </div>
+                    )}
                 </div>
             </section>
 

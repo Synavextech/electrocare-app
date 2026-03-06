@@ -1,18 +1,15 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSale = exports.getSalesByUser = exports.createSale = exports.SaleSchema = void 0;
-const db_1 = require("../db");
-const zod_1 = require("zod");
-exports.SaleSchema = zod_1.z.object({
-    device: zod_1.z.string(),
-    price: zod_1.z.number(),
-    description: zod_1.z.string().optional(),
-    condition: zod_1.z.string().optional(),
-    imageUrl: zod_1.z.string().optional(),
-    serialNumber: zod_1.z.string().optional(),
+import { supabase } from '../db';
+import { z } from 'zod';
+export const SaleSchema = z.object({
+    device: z.string(),
+    price: z.number(),
+    description: z.string().optional(),
+    condition: z.string().optional(),
+    imageUrl: z.string().optional(),
+    serialNumber: z.string().optional(),
 });
-const createSale = async (data) => {
-    const { data: sale, error } = await db_1.supabase
+export const createSale = async (data) => {
+    const { data: sale, error } = await supabase
         .from('DeviceSale')
         .insert({
         userId: data.userId,
@@ -29,9 +26,8 @@ const createSale = async (data) => {
         throw error;
     return sale;
 };
-exports.createSale = createSale;
-const getSalesByUser = async (userId) => {
-    const { data, error } = await db_1.supabase
+export const getSalesByUser = async (userId) => {
+    const { data, error } = await supabase
         .from('DeviceSale')
         .select('*')
         .eq('userId', userId);
@@ -39,9 +35,8 @@ const getSalesByUser = async (userId) => {
         throw error;
     return data;
 };
-exports.getSalesByUser = getSalesByUser;
-const updateSale = async (id, data) => {
-    const { data: sale, error } = await db_1.supabase
+export const updateSale = async (id, data) => {
+    const { data: sale, error } = await supabase
         .from('DeviceSale')
         .update(data)
         .eq('id', id)
@@ -51,6 +46,4 @@ const updateSale = async (id, data) => {
         throw error;
     return sale;
 };
-exports.updateSale = updateSale;
-// On approval, award points to user via updateUser
 //# sourceMappingURL=sale.js.map

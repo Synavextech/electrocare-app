@@ -1,47 +1,44 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+import { supabase } from '../db';
+export const getTechniciansByShop = async (shopId) => {
+    let query = supabase.from('Technicians').select('*');
+    if (shopId) {
+        query = query.eq('shopId', shopId);
+    }
+    const { data, error } = await query;
+    if (error) {
+        console.error('getTechniciansByShop Error:', error);
+        throw error;
+    }
+    return data;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTechnician = exports.getTechnicianById = exports.getTechniciansByShop = void 0;
-const promises_1 = __importDefault(require("fs/promises"));
-const paths_1 = require("../utils/paths");
-const techniciansPath = paths_1.DATA_PATHS.technicians;
-const shopsPath = paths_1.DATA_PATHS.shops;
-const getTechniciansByShop = async (shopId) => {
-    const data = await promises_1.default.readFile(techniciansPath, 'utf8');
-    const technicians = JSON.parse(data);
-    if (!shopId)
-        return technicians;
-    return technicians.filter(t => t.shopId === shopId);
+export const getTechnicianById = async (id) => {
+    const { data, error } = await supabase
+        .from('Technicians')
+        .select('*')
+        .eq('id', id)
+        .single();
+    if (error) {
+        console.error('getTechnicianById Error:', error);
+        return null;
+    }
+    return data;
 };
-exports.getTechniciansByShop = getTechniciansByShop;
-const getTechnicianById = async (id) => {
-    const data = await promises_1.default.readFile(techniciansPath, 'utf8');
-    const technicians = JSON.parse(data);
-    return technicians.find(t => t.id === id) || null;
+export const createTechnician = async (data) => {
+    const { data: newTech, error } = await supabase
+        .from('Technicians')
+        .insert([
+        {
+            ...data,
+            rating: data.rating || 4.5,
+            reviews: data.reviews || 0,
+        }
+    ])
+        .select()
+        .single();
+    if (error) {
+        console.error('createTechnician Error:', error);
+        throw error;
+    }
+    return newTech;
 };
-exports.getTechnicianById = getTechnicianById;
-const createTechnician = async (data) => {
-    // This function seems to be for auto-creating a technician profile?
-    // Or maybe it was intended to link a user to a technician profile.
-    // For now, I'll implement it to add to the JSON file.
-    const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
-    const shops = JSON.parse(shopsData);
-    const shop = shops[0]; // Assign to first shop
-    const techniciansData = await promises_1.default.readFile(techniciansPath, 'utf8');
-    const technicians = JSON.parse(techniciansData);
-    const newTechnician = {
-        id: crypto.randomUUID(),
-        name: 'Pending',
-        phone: 'Pending',
-        isTrained: false,
-        referral: 'Pending',
-        shopId: shop ? shop.id : 'unknown',
-    };
-    technicians.push(newTechnician);
-    await promises_1.default.writeFile(techniciansPath, JSON.stringify(technicians, null, 2));
-    return newTechnician;
-};
-exports.createTechnician = createTechnician;
 //# sourceMappingURL=technician.js.map

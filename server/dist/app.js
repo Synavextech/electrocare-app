@@ -1,36 +1,31 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.io = exports.app = void 0;
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const promises_1 = __importDefault(require("fs/promises"));
-const path_1 = __importDefault(require("path"));
-const http_1 = require("http");
-const socket_io_1 = require("socket.io");
-const socket_1 = require("./socket");
-const auth_1 = __importDefault(require("./routes/auth"));
-const repairs_1 = __importDefault(require("./routes/repairs"));
-const marketplace_1 = __importDefault(require("./routes/marketplace"));
-const upload_1 = __importDefault(require("./routes/upload"));
-const wallet_1 = __importDefault(require("./routes/wallet"));
-const recruitment_1 = __importDefault(require("./routes/recruitment"));
-const admin_1 = __importDefault(require("./routes/admin"));
-const notification_1 = __importDefault(require("./routes/notification"));
-const shop_1 = __importDefault(require("./routes/shop"));
-const technician_1 = __importDefault(require("./routes/technician"));
-const sale_1 = __importDefault(require("./routes/sale"));
-const auth_2 = __importDefault(require("./middleware/auth"));
-const paths_1 = require("./utils/paths");
-const isDist = __dirname.endsWith('dist');
-const reqPath = isDist ? '../..' : '..';
-dotenv_1.default.config({ path: (0, paths_1.resolveFromRoot)('.env') });
-const app = (0, express_1.default)();
-exports.app = app;
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../.env') });
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { initSocket } from './socket';
+import authMiddleware from './middleware/auth';
+import { roleCheck } from './middleware/roleCheck';
+import { resolveFromRoot } from './utils/paths';
+import commonRoutes from './routes/common';
+import authRoutes from './routes/auth';
+import repairsRoutes from './routes/repairs';
+import marketplaceRoutes from './routes/marketplace';
+import uploadRoutes from './routes/upload';
+import walletRoutes from './routes/wallet';
+import recruitmentRoutes from './routes/recruitment';
+import adminRoutes from './routes/admin';
+import notificationRoutes from './routes/notification';
+import shopRoutes from './routes/shop';
+import technicianRoutes from './routes/technician';
+import saleRoutes from './routes/sale';
+const app = express();
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
     : [
@@ -40,7 +35,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
         'http://localhost:3001'
     ];
 console.log('Allowed Origins:', allowedOrigins);
-app.use((0, cors_1.default)({
+app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
@@ -52,145 +47,37 @@ app.use((0, cors_1.default)({
     },
     credentials: true
 }));
-app.use(express_1.default.json());
-app.use((0, cookie_parser_1.default)());
+app.use(express.json());
+app.use(cookieParser());
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next();
 });
-const distPath = (0, paths_1.resolveFromRoot)('dist');
+const distPath = resolveFromRoot('dist');
 // Serve static files from dist
-app.use(express_1.default.static(distPath));
+app.use(express.static(distPath));
 // Handle SPA routing
 app.get('*', (req, res, next) => {
     if (req.url.startsWith('/api')) {
         return next();
     }
-    res.sendFile(path_1.default.join(distPath, 'index.html'));
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 // Routes
-app.use('/api/auth', auth_1.default);
-app.use('/api/repairs', auth_2.default, repairs_1.default);
-app.use('/api/marketplace', marketplace_1.default);
-app.use('/api/upload', upload_1.default);
-app.use('/api/wallet', wallet_1.default);
-app.use('/api/recruitment', recruitment_1.default);
-app.use('/api/admin', auth_2.default, admin_1.default);
-app.use('/api/notifications', auth_2.default, notification_1.default);
-app.use('/api/shops', shop_1.default); // plural as expected by frontend
-app.use('/api/technician', technician_1.default);
-app.use('/api/sales', auth_2.default, sale_1.default);
-app.get('/api/device-types', async (req, res) => {
-    try {
-        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.repairableDevices, 'utf8');
-        res.json(JSON.parse(data));
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to load device types' });
-    }
-});
-app.get('/api/models', async (req, res) => {
-    try {
-        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.repairableModels, 'utf8');
-        res.json(JSON.parse(data));
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to load models' });
-    }
-});
-app.post('/api/admin/models', auth_2.default, async (req, res) => {
-    try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ error: 'Unauthorized' });
-        }
-        await promises_1.default.writeFile(paths_1.DATA_PATHS.repairableModels, JSON.stringify(req.body, null, 2));
-        res.json({ message: 'Models updated successfully' });
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to update models' });
-    }
-});
-// Delivery personnel endpoint (kept inline for now as no route file exists)
-app.get('/api/delivery-personnel', async (req, res) => {
-    try {
-        const { shopId } = req.query;
-        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.deliveryPersonnel, 'utf8');
-        let personnel = JSON.parse(data);
-        if (shopId) {
-            personnel = personnel.filter((p) => p.shopId === shopId);
-        }
-        res.json(personnel);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to load delivery personnel' });
-    }
-});
-app.post('/api/technicians', auth_2.default, async (req, res) => {
-    try {
-        // Assuming admin or shop owner can create technicians
-        if (req.user.role !== 'admin')
-            return res.status(403).json({ error: 'Unauthorized' });
-        const { name, phone, isTrained, referral, shopId } = req.body;
-        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.technicians, 'utf8');
-        const technicians = JSON.parse(data);
-        const newTechnician = {
-            id: crypto.randomUUID(),
-            name,
-            phone,
-            isTrained,
-            referral,
-            shopId
-        };
-        technicians.push(newTechnician);
-        await promises_1.default.writeFile(paths_1.DATA_PATHS.technicians, JSON.stringify(technicians, null, 2));
-        res.json(newTechnician);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to create technician' });
-    }
-});
-// Shop services endpoints
-app.get('/api/shop/:id/services', async (req, res) => {
-    try {
-        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.shops, 'utf8');
-        const shops = JSON.parse(data);
-        const shop = shops.find(s => s.id === req.params.id);
-        if (!shop)
-            return res.status(404).json({ error: 'Shop not found' });
-        res.json(shop.services || []);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to fetch services' });
-    }
-});
-app.post('/api/shop/:id/services', auth_2.default, async (req, res) => {
-    try {
-        const data = await promises_1.default.readFile(paths_1.DATA_PATHS.shops, 'utf8');
-        const shops = JSON.parse(data);
-        const shopIndex = shops.findIndex(s => s.id === req.params.id);
-        if (shopIndex === -1) {
-            return res.status(404).json({ error: 'Shop not found' });
-        }
-        // Check permissions
-        if (req.user.role !== 'admin' && req.user.id !== shops[shopIndex].id) { // Assuming shop ID matches user ID for shop owners? Or just admin
-            // If shop owner logic is different, adjust here. For now, strict admin or matching ID if shop is user
-            if (req.user.role !== 'admin')
-                return res.status(403).json({ error: 'Unauthorized' });
-        }
-        const { models } = req.body;
-        shops[shopIndex].services = models;
-        await promises_1.default.writeFile(paths_1.DATA_PATHS.shops, JSON.stringify(shops, null, 2));
-        res.json({ message: 'Services updated' });
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to update services' });
-    }
-});
-app.post('/api/delivery-persons', auth_2.default, async (req, res) => {
-    // Delivery persons also likely in a JSON or just users with role
-    // For now, implementing as JSON if needed, or just skipping as user didn't specify delivery person JSON
-    res.status(501).json({ error: 'Not implemented yet' });
-});
+app.use('/api', commonRoutes); // device-types, models
+app.use('/api/auth', authRoutes);
+app.use('/api/repairs', authMiddleware, repairsRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/wallet', authMiddleware, walletRoutes);
+app.use('/api/recruitment', recruitmentRoutes);
+app.use('/api/admin', authMiddleware, roleCheck(['admin']), adminRoutes);
+app.use('/api/notifications', authMiddleware, notificationRoutes);
+app.use('/api/shops', shopRoutes);
+app.use('/api/technician', authMiddleware, technicianRoutes);
+app.use('/api/sales', authMiddleware, saleRoutes);
+// ... (keep middle logic until app.use routes)
+// Remove inline route definitions that are now in commonRoutes or other route files
 function haversineDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radius of the Earth in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -205,18 +92,18 @@ app.use((err, req, res, next) => {
     console.error(err.message);
     res.status(500).json({ error: 'Internal Server Error' });
 });
-const PORT = process.env.PORT || 5000;
-const server = (0, http_1.createServer)(app);
-const io = new socket_io_1.Server(server, {
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
+const server = createServer(app);
+const io = new Server(server, {
     cors: {
         origin: allowedOrigins,
         methods: ['GET', 'POST'],
         credentials: true,
     },
 });
-exports.io = io;
-(0, socket_1.initSocket)(io);
+initSocket(io);
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+export { app, io };
 //# sourceMappingURL=app.js.map

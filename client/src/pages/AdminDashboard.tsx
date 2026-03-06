@@ -63,11 +63,15 @@ const AdminDashboard: React.FC = () => {
   });
 
   const approveSaleMutation = useMutation({
-    mutationFn: ({ saleId, points }: { saleId: string, points: number }) =>
-      apiClient.post('/admin/approve-sale', { saleId, points }),
+    mutationFn: ({ saleId, points, cash }: { saleId: string, points?: number, cash?: number }) =>
+      apiClient.post('/admin/approve-sale', { saleId, points, cash }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pending-sales'] });
+      alert('Sale approved successfully!');
     },
+    onError: (err: any) => {
+      alert(err.response?.data?.error || 'Approval failed');
+    }
   });
 
   const rejectSaleMutation = useMutation({
@@ -105,6 +109,8 @@ const AdminDashboard: React.FC = () => {
   });
 
   const [rejectionReason, setRejectionReason] = useState<{ [key: string]: string }>({});
+  const [awardType, setAwardType] = useState<{ [key: string]: 'points' | 'cash' }>({});
+  const [awardAmount, setAwardAmount] = useState<{ [key: string]: number }>({});
 
   const [broadcast, setBroadcast] = useState({ subject: '', message: '' });
   const [selectedGalleryListing, setSelectedGalleryListing] = useState<any | null>(null);
@@ -252,6 +258,36 @@ const AdminDashboard: React.FC = () => {
                       <p className="text-white/40 text-sm mb-6 leading-relaxed">Seller: <span className="text-white">{sale.user?.name}</span><br />{sale.description}</p>
 
                       <div className="space-y-4 pt-6 border-t border-white/5">
+                        <div className="flex flex-col gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                          <div className="flex items-center justify-between gap-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Award Type</label>
+                            <div className="flex gap-2">
+                              {(['points', 'cash'] as const).map((type) => (
+                                <button
+                                  key={type}
+                                  onClick={() => setAwardType({ ...awardType, [sale.id]: type })}
+                                  className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-premium ${(awardType[sale.id] || 'points') === type
+                                      ? 'vibrant-gradient text-white shadow-lg'
+                                      : 'bg-white/5 text-white/40 border border-white/5'
+                                    }`}
+                                >
+                                  {type}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Amount</label>
+                            <input
+                              type="number"
+                              value={awardAmount[sale.id] || (awardType[sale.id] === 'cash' ? Math.floor(sale.price * 0.1) : 50)}
+                              onChange={(e) => setAwardAmount({ ...awardAmount, [sale.id]: Number(e.target.value) })}
+                              className="w-24 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-brand font-bold focus:ring-1 focus:ring-brand outline-none"
+                            />
+                          </div>
+                        </div>
+
                         <textarea
                           placeholder="Rejection reason (if rejecting)..."
                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:ring-1 focus:ring-brand"
@@ -262,7 +298,15 @@ const AdminDashboard: React.FC = () => {
                           <span className="text-2xl font-black text-white">${sale.price}</span>
                           <div className="flex gap-2">
                             <button
-                              onClick={() => approveSaleMutation.mutate({ saleId: sale.id, points: 50 })}
+                              onClick={() => {
+                                const type = awardType[sale.id] || 'points';
+                                const amount = awardAmount[sale.id] || (type === 'cash' ? Math.floor(sale.price * 0.1) : 50);
+                                approveSaleMutation.mutate({
+                                  saleId: sale.id,
+                                  points: type === 'points' ? amount : undefined,
+                                  cash: type === 'cash' ? amount : undefined
+                                });
+                              }}
                               className="vibrant-gradient text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-premium"
                             >
                               Approve

@@ -16,8 +16,11 @@ import {
     rejectRoleApplication
 } from '../controllers/admin';
 
+import { roleCheck } from '../middleware/roleCheck';
+
 const router = express.Router();
 router.use(authMiddleware);
+router.use(roleCheck(['admin']));
 
 router.post('/approve-sale', approveSale);
 router.post('/reject-sale', rejectSale);

@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateWallet = exports.getTransactionsByUser = exports.createTransaction = exports.TransactionSchema = void 0;
-const db_1 = require("../db");
-const zod_1 = require("zod");
-exports.TransactionSchema = zod_1.z.object({
-    amount: zod_1.z.number().positive(),
-    type: zod_1.z.enum(['deposit', 'withdrawal', 'payment', 'redeem']),
+import { supabase } from '../db';
+import { z } from 'zod';
+export const TransactionSchema = z.object({
+    amount: z.number().positive(),
+    type: z.enum(['deposit', 'withdrawal', 'payment', 'redeem']),
 });
-const createTransaction = async (data) => {
-    const { data: tx, error } = await db_1.supabase
+export const createTransaction = async (data) => {
+    const { data: tx, error } = await supabase
         .from('Transaction')
         .insert(data)
         .select()
@@ -17,16 +14,15 @@ const createTransaction = async (data) => {
         throw error;
     return tx;
 };
-exports.createTransaction = createTransaction;
-const getTransactionsByUser = async (userId) => {
-    const { data: wallet } = await db_1.supabase
+export const getTransactionsByUser = async (userId) => {
+    const { data: wallet } = await supabase
         .from('Wallet')
         .select('id')
         .eq('userId', userId)
         .single();
     if (!wallet)
         return [];
-    const { data, error } = await db_1.supabase
+    const { data, error } = await supabase
         .from('Transaction')
         .select('*')
         .eq('walletId', wallet.id);
@@ -34,9 +30,8 @@ const getTransactionsByUser = async (userId) => {
         throw error;
     return data;
 };
-exports.getTransactionsByUser = getTransactionsByUser;
-const updateWallet = async (userId, data) => {
-    const { data: wallet, error } = await db_1.supabase
+export const updateWallet = async (userId, data) => {
+    const { data: wallet, error } = await supabase
         .from('Wallet')
         .update(data)
         .eq('userId', userId)
@@ -46,5 +41,4 @@ const updateWallet = async (userId, data) => {
         throw error;
     return wallet;
 };
-exports.updateWallet = updateWallet;
 //# sourceMappingURL=wallet.js.map

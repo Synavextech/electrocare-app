@@ -9,7 +9,7 @@ const AboutUs: React.FC = () => {
                     About <span className="text-brand">ElectroCare.</span>
                 </h1>
                 <p className="text-white/60 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-                    Kenya's premier platform for electronic device repairs and sustainable technology management.
+                    Your premier platform for electronic device repairs and sustainable technology management.
                 </p>
             </section>
 

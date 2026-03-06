@@ -7,13 +7,18 @@ export const uploadImage = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
+        const folder = req.body.folder || 'marketplace';
+        const bucket = req.body.bucket || 'device-media';
+
         const file = req.file;
         const fileExt = file.originalname.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `marketplace/${fileName}`;
+        const filePath = `${folder}/${fileName}`;
+
+        console.log(`Uploading to bucket: ${bucket}, path: ${filePath}`);
 
         const { data, error } = await supabase.storage
-            .from('device-media')
+            .from(bucket)
             .upload(filePath, file.buffer, {
                 contentType: file.mimetype,
                 upsert: false,
@@ -25,10 +30,10 @@ export const uploadImage = async (req: Request, res: Response) => {
         }
 
         const { data: { publicUrl } } = supabase.storage
-            .from('device-media')
+            .from(bucket)
             .getPublicUrl(filePath);
 
-        res.json({ imageUrl: publicUrl });
+        res.json({ imageUrl: publicUrl, path: filePath });
     } catch (err) {
         console.error('Upload failed details:', err);
         res.status(500).json({ error: (err as Error).message || 'Upload failed' });

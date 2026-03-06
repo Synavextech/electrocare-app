@@ -1,8 +1,9 @@
 {
     "name": "electrocare-server",
     "private": true,
-    "type": "commonjs",
+    "type": "module",
     "scripts": {
+        "dev": "nodemon --exec 'tsx app.ts'",
         "build": "tsc"
     }
 }

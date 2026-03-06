@@ -8,30 +8,44 @@ export default async function authMiddleware(req: Request, res: Response, next: 
     token = req.headers.authorization?.split(' ')[1];
   }
 
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized: No token provided' });
+  }
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
-    if (error || !user) {
-      return res.status(401).json({ error: 'Invalid token' });
+    if (authError || !user) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
     }
 
-    // Fetch user role from public.User table
-    const { data: profile } = await supabase
+    // Fetch user profile to get the role
+    const { data: profile, error: profileError } = await supabase
       .from('User')
-      .select('role')
+      .select('role, name, email')
       .eq('id', user.id)
       .single();
 
-    req.user = {
-      id: user.id,
-      role: profile?.role || 'user',
-      email: user.email
-    };
+    if (profileError || !profile) {
+      // Fallback or error if profile doesn't exist?
+      // According to system rules, profile should exist.
+      req.user = {
+        id: user.id,
+        role: 'user', // Default to user if profile not found
+        email: user.email
+      };
+    } else {
+      req.user = {
+        id: user.id,
+        role: profile.role,
+        email: profile.email || user.email,
+        name: profile.name
+      };
+    }
 
     next();
   } catch (err) {
+    console.error('Auth Middleware Error:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }

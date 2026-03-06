@@ -1,16 +1,16 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-/**
- * Utility to resolve paths consistently across development and production (dist).
- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isDist = __dirname.includes('dist');
 
 // If in server/utils/paths.ts -> ROOT is ..
 // If in server/dist/utils/paths.ts -> ROOT is ../../..
 export const SERVER_ROOT = isDist
-    ? path.join(__dirname, '../../..')
-    : path.join(__dirname, '..');
+    ? path.join(__dirname, '../../../../') // server/dist/utils/paths.ts -> ../../../../ -> monorepo root
+    : path.join(__dirname, '../../');    // server/utils/paths.ts -> ../../ -> monorepo root
 
 
 /**

@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getReferralsByUser = exports.createReferral = void 0;
-const db_1 = require("../db");
-const createReferral = async (data) => {
-    const { data: referral, error } = await db_1.supabase
+import { supabase } from '../db';
+export const createReferral = async (data) => {
+    const { data: referral, error } = await supabase
         .from('Referral')
         .insert({
         referrerId: data.referrerId,
@@ -16,9 +13,8 @@ const createReferral = async (data) => {
         throw error;
     return referral;
 };
-exports.createReferral = createReferral;
-const getReferralsByUser = async (userId) => {
-    const { data, error } = await db_1.supabase
+export const getReferralsByUser = async (userId) => {
+    const { data, error } = await supabase
         .from('Referral')
         .select('*')
         .eq('referrerId', userId);
@@ -26,5 +22,4 @@ const getReferralsByUser = async (userId) => {
         throw error;
     return data;
 };
-exports.getReferralsByUser = getReferralsByUser;
 //# sourceMappingURL=referral.js.map

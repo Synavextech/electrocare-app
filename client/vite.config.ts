@@ -5,6 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 // Vite config for React SPA with TS, PWA, Tailwind (per electro.md)
 export default defineConfig({
+  envDir: '../',
   plugins: [
     react(),
     TanStackRouterVite(),
@@ -39,8 +40,18 @@ export default defineConfig({
   ],
   base: '/', // For cPanel public_html root
   server: {
-    port: 3000, // Local dev port
+    port: parseInt(process.env.FRONTEND_PORT || '3000'), // Local dev port from .env
     open: false, // Disable auto-open in production/headless
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://localhost:5000',
+        ws: true,
+      }
+    }
   },
   build: {
     outDir: '../dist', // Build to root dist

@@ -8,18 +8,22 @@ export const userSchema = z.object({
 });
 // Add this new export for repair validation (aligns with repairs table and form fields)
 export const repairSchema = z.object({
-  device_type: z.string().min(1, { message: 'Device type is required' }),  // e.g., 'phone', 'tablet'
-  device_model: z.string().optional(),
-  issue: z.string().min(1, { message: 'Issue description is required' }),  // e.g., 'screen crack'
-  delivery: z.boolean().optional(),  // True for pickup/delivery; false for walk-in
-  // Optional fields (add as per form; e.g., for cost, status if pre-set)
-  cost: z.number().optional(),  // Calculated or user-input
-  status: z.enum(['pending', 'in_progress', 'completed']).optional(),  // Default 'pending'
-  // Exclude DB-only like id, timestamps, user_id (handled backend)
+  device_type: z.string().min(1, { message: 'Device type is required' }),
+  device_model: z.string().min(1, { message: 'Device model is required' }),
+  issue: z.string().min(1, { message: 'Issue description is required' }),
+  delivery: z.boolean().optional(),
+  paymentMethod: z.enum(['cod', 'online']).default('cod'),
+  cost: z.number().optional(),
+  status: z.enum(['pending', 'in_progress', 'completed']).optional(),
 });
+
 export const saleSchema = z.object({
-  condition: z.string().min(1, { message: 'Device condition is required' }),
+  device: z.string().min(1, { message: 'Device name is required' }),
   description: z.string().min(1, { message: 'Description is required' }),
+  price: z.number().positive({ message: 'Price must be positive' }),
+  condition: z.enum(['New', 'Used', 'Refurbished', 'Unusable']),
+  mainCategory: z.enum(['Mobile Phone', 'Laptop']),
+  subCategory: z.enum(['Device', 'Accessory']),
 });
 
 export const loginSchema = z.object({

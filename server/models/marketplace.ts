@@ -9,11 +9,13 @@ export interface DeviceSale {
     device: string;
     description: string;
     price: number;
+    pointsAwarded?: number;
+    cashAwarded?: number;
     imageUrls: string[];
     condition: 'New' | 'Used' | 'Refurbished' | 'Unusable';
     status: 'pending' | 'approved' | 'rejected' | 'sold';
-    category?: string;
-    subCategory?: string;
+    mainCategory: 'Mobile Phone' | 'Laptop';
+    subCategory: 'Device' | 'Accessory';
     serialNumber: string;
     createdAt: Date;
     updatedAt: Date;
@@ -30,14 +32,14 @@ export interface DevicePurchase {
 }
 
 export const ListingSchema = z.object({
-    title: z.string().min(1, "Title is required"),
+    device: z.string().min(1, "Device name is required"),
     description: z.string().min(1, "Description is required"),
     price: z.number().positive("Price must be positive"),
     imageUrls: z.array(z.string()).max(5, "Up to 5 images allowed").optional(),
     condition: z.enum(['New', 'Used', 'Refurbished', 'Unusable']),
     location: z.string().optional().nullable(),
-    category: z.string().optional(),
-    subCategory: z.string().optional(),
+    mainCategory: z.enum(['Mobile Phone', 'Laptop']),
+    subCategory: z.enum(['Device', 'Accessory']),
 });
 
 export const createListing = async (data: any, userRole: string) => {
@@ -45,13 +47,13 @@ export const createListing = async (data: any, userRole: string) => {
 
     // Validate permissions
     if ((data.condition === 'New' || data.condition === 'Refurbished') && userRole !== 'admin' && userRole !== 'shop') {
-        throw new Error('Only Admin and Certified Shops can post New or Refurbished phones. Please contact a nearby shop for certification or to post on your behalf.');
+        throw new Error('Only Admin and Certified Shops can post New or Refurbished items. Please contact a nearby shop for certification or to post on your behalf.');
     }
 
     // Ensure device is set
-    const deviceName = data.title || data.device;
+    const deviceName = data.device || data.title;
     if (!deviceName) {
-        throw new Error('Device name (title) is required');
+        throw new Error('Device name is required');
     }
 
     // Generate Serialization: Category-DDMMYY-SHOPNAME-NNN
@@ -68,8 +70,8 @@ export const createListing = async (data: any, userRole: string) => {
     // Find nearby shop name
     let shopName = 'ONLINE';
     if (data.location) {
-        const shops = await getNearbyShops(data.location);
-        if (shops.length > 0) {
+        const shops = await getNearbyShops(data.location || '');
+        if (shops && shops.length > 0) {
             shopName = shops[0].name.toUpperCase().replace(/\s+/g, '').slice(0, 5);
         }
     }
@@ -88,7 +90,7 @@ export const createListing = async (data: any, userRole: string) => {
             price: data.price,
             imageUrls: data.imageUrls || [],
             condition: data.condition,
-            category: data.category,
+            mainCategory: data.mainCategory,
             subCategory: data.subCategory,
             status: userRole === 'admin' || userRole === 'shop' ? 'approved' : 'pending',
             serialNumber
@@ -103,13 +105,17 @@ export const createListing = async (data: any, userRole: string) => {
     return listing;
 };
 
-export const getListings = async () => {
-    const { data, error } = await supabase
+export const getListings = async (mainCategory?: string, subCategory?: string) => {
+    let query = supabase
         .from('DeviceSale')
         .select('*, user:User(*)')
         .eq('status', 'approved')
-        .neq('condition', 'Unusable')
-        .order('createdAt', { ascending: false });
+        .neq('condition', 'Unusable');
+
+    if (mainCategory) query = query.eq('mainCategory', mainCategory);
+    if (subCategory) query = query.eq('subCategory', subCategory);
+
+    const { data, error } = await query.order('createdAt', { ascending: false });
 
     if (error) throw error;
     return data;

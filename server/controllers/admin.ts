@@ -4,30 +4,49 @@ import { supabase } from '../db';
 import axios from 'axios';
 import { updateApplicationStatus } from '../models/roleApplication';
 
-// Admin approves sales, awards points
+// Admin approves sales, awards points or cash
 export const approveSale = async (req: Request, res: Response) => {
   try {
     if (!['admin', 'shop', 'technician'].includes(req.user?.role || '')) return res.status(403).json({ error: 'Forbidden' });
-    const { saleId, points } = req.body;
+    const { saleId, points, cash } = req.body;
+
+    // Determine what to award
+    const updateData: any = { status: 'approved' };
+    if (points) updateData.pointsAwarded = points;
+    if (cash) updateData.cashAwarded = cash;
 
     const { data: sale, error } = await supabase
       .from('DeviceSale')
-      .update({ status: 'approved', pointsAwarded: points })
+      .update(updateData)
       .eq('id', saleId)
       .select('*, user:User(*, wallet:Wallet(*))')
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error during approval:', JSON.stringify(error, null, 2));
+      throw error;
+    }
 
     if (sale.user?.wallet) {
-      await supabase.from('Wallet').update({
-        points: sale.user.wallet.points + (points || 0)
-      }).eq('id', sale.user.wallet.id);
+      const walletUpdate: any = {};
+      if (points) walletUpdate.points = (sale.user.wallet.points || 0) + (points || 0);
+      if (cash) walletUpdate.balance = (sale.user.wallet.balance || 0) + (cash || 0);
+
+      const { error: walletError } = await supabase
+        .from('Wallet')
+        .update(walletUpdate)
+        .eq('id', sale.user.wallet.id);
+
+      if (walletError) {
+        console.error('Wallet update failed:', walletError);
+        // We might not want to throw here if the sale was already marked approved, 
+        // but it's better to be consistent.
+      }
     }
     res.json(sale);
   } catch (err) {
-    console.error('Approval failed:', (err as Error).message);
-    res.status(500).json({ error: 'Approval failed' });
+    console.error('Approval failed details:', err);
+    res.status(500).json({ error: (err as Error).message || 'Approval failed' });
   }
 };
 

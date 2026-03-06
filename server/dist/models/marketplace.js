@@ -1,29 +1,26 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getListings = exports.createListing = exports.ListingSchema = void 0;
-const db_1 = require("../db");
-const zod_1 = require("zod");
-const shop_1 = require("./shop");
-exports.ListingSchema = zod_1.z.object({
-    title: zod_1.z.string().min(1, "Title is required"),
-    description: zod_1.z.string().min(1, "Description is required"),
-    price: zod_1.z.number().positive("Price must be positive"),
-    imageUrls: zod_1.z.array(zod_1.z.string()).max(5, "Up to 5 images allowed").optional(),
-    condition: zod_1.z.enum(['New', 'Used', 'Refurbished', 'Unusable']),
-    location: zod_1.z.string().optional().nullable(),
-    category: zod_1.z.string().optional(),
-    subCategory: zod_1.z.string().optional(),
+import { supabase } from '../db';
+import { z } from 'zod';
+import { getNearbyShops } from './shop';
+export const ListingSchema = z.object({
+    device: z.string().min(1, "Device name is required"),
+    description: z.string().min(1, "Description is required"),
+    price: z.number().positive("Price must be positive"),
+    imageUrls: z.array(z.string()).max(5, "Up to 5 images allowed").optional(),
+    condition: z.enum(['New', 'Used', 'Refurbished', 'Unusable']),
+    location: z.string().optional().nullable(),
+    mainCategory: z.enum(['Mobile Phone', 'Laptop']),
+    subCategory: z.enum(['Device', 'Accessory']),
 });
-const createListing = async (data, userRole) => {
+export const createListing = async (data, userRole) => {
     console.log('Creating listing with data:', JSON.stringify(data, null, 2));
     // Validate permissions
     if ((data.condition === 'New' || data.condition === 'Refurbished') && userRole !== 'admin' && userRole !== 'shop') {
-        throw new Error('Only Admin and Certified Shops can post New or Refurbished phones. Please contact a nearby shop for certification or to post on your behalf.');
+        throw new Error('Only Admin and Certified Shops can post New or Refurbished items. Please contact a nearby shop for certification or to post on your behalf.');
     }
     // Ensure device is set
-    const deviceName = data.title || data.device;
+    const deviceName = data.device || data.title;
     if (!deviceName) {
-        throw new Error('Device name (title) is required');
+        throw new Error('Device name is required');
     }
     // Generate Serialization: Category-DDMMYY-SHOPNAME-NNN
     const date = new Date();
@@ -39,15 +36,15 @@ const createListing = async (data, userRole) => {
     // Find nearby shop name
     let shopName = 'ONLINE';
     if (data.location) {
-        const shops = await (0, shop_1.getNearbyShops)(data.location);
-        if (shops.length > 0) {
+        const shops = await getNearbyShops(data.location || '');
+        if (shops && shops.length > 0) {
             shopName = shops[0].name.toUpperCase().replace(/\s+/g, '').slice(0, 5);
         }
     }
-    const { count } = await db_1.supabase.from('DeviceSale').select('*', { count: 'exact', head: true });
+    const { count } = await supabase.from('DeviceSale').select('*', { count: 'exact', head: true });
     const sequence = String((count || 0) + 1).padStart(3, '0');
     const serialNumber = `${categoryCode}-${dateStr}-${shopName}-${sequence}`;
-    const { data: listing, error } = await db_1.supabase
+    const { data: listing, error } = await supabase
         .from('DeviceSale')
         .insert({
         userId: data.userId,
@@ -56,7 +53,7 @@ const createListing = async (data, userRole) => {
         price: data.price,
         imageUrls: data.imageUrls || [],
         condition: data.condition,
-        category: data.category,
+        mainCategory: data.mainCategory,
         subCategory: data.subCategory,
         status: userRole === 'admin' || userRole === 'shop' ? 'approved' : 'pending',
         serialNumber
@@ -69,17 +66,19 @@ const createListing = async (data, userRole) => {
     }
     return listing;
 };
-exports.createListing = createListing;
-const getListings = async () => {
-    const { data, error } = await db_1.supabase
+export const getListings = async (mainCategory, subCategory) => {
+    let query = supabase
         .from('DeviceSale')
         .select('*, user:User(*)')
         .eq('status', 'approved')
-        .neq('condition', 'Unusable')
-        .order('createdAt', { ascending: false });
+        .neq('condition', 'Unusable');
+    if (mainCategory)
+        query = query.eq('mainCategory', mainCategory);
+    if (subCategory)
+        query = query.eq('subCategory', subCategory);
+    const { data, error } = await query.order('createdAt', { ascending: false });
     if (error)
         throw error;
     return data;
 };
-exports.getListings = getListings;
 //# sourceMappingURL=marketplace.js.map

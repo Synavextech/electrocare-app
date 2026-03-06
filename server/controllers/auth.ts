@@ -105,13 +105,22 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    console.log(`Login attempt for: ${email}`);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) return res.status(401).json({ error: error.message });
+    if (error) {
+      console.error('Supabase Login Error:', JSON.stringify(error, null, 2));
+      return res.status(401).json({ error: error.message });
+    }
+
+    if (!data.session) {
+      console.warn('Login successful but no session returned');
+      return res.status(401).json({ error: 'Auth session failed' });
+    }
 
     // Fetch profile to get role
     const { data: profile } = await supabase

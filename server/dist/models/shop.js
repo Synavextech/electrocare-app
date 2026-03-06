@@ -1,75 +1,90 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNearbyShops = exports.getShops = exports.createShop = exports.ShopSchema = void 0;
-const promises_1 = __importDefault(require("fs/promises"));
-const zod_1 = require("zod");
-const paths_1 = require("../utils/paths");
-const shopsPath = paths_1.DATA_PATHS.shops;
-exports.ShopSchema = zod_1.z.object({
-    name: zod_1.z.string(),
-    address: zod_1.z.string(),
-    lat: zod_1.z.number(),
-    lng: zod_1.z.number(),
-    county: zod_1.z.string(),
+import { supabase } from '../db';
+import { z } from 'zod';
+export const ShopSchema = z.object({
+    name: z.string(),
+    address: z.string(),
+    lat: z.number(),
+    lng: z.number(),
+    county: z.string(),
+    services: z.array(z.string()).optional(),
 });
-const createShop = async (data) => {
-    let shops = [];
-    try {
-        const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
-        shops = JSON.parse(shopsData);
-    }
-    catch (error) {
-        // File might not exist or be empty
-        shops = [];
-    }
+export const createShop = async (data) => {
     // Generate Shop Code: DDMMYY-COUNTY-NNN
     const date = new Date();
-    const yyyy = date.getFullYear().toString().slice(-2); // YY
+    const yyyy = date.getFullYear().toString().slice(-2);
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const dd = String(date.getDate()).padStart(2, '0');
     const dateStr = `${dd}${mm}${yyyy}`;
     const county = data.county.toUpperCase().replace(/\s+/g, '');
-    // Find count of shops in this county
-    const countyShops = shops.filter(s => s.county.toUpperCase().replace(/\s+/g, '') === county);
-    const sequence = String(countyShops.length + 1).padStart(3, '0');
+    // Find count of shops in this county using Supabase
+    const { count } = await supabase
+        .from('Shops')
+        .select('*', { count: 'exact', head: true })
+        .ilike('county', county);
+    const sequence = String((count || 0) + 1).padStart(3, '0');
     const shopCode = `${dateStr}-${county}-${sequence}`;
-    const newShop = {
-        id: crypto.randomUUID(),
+    const { data: newShop, error } = await supabase
+        .from('Shops')
+        .insert({
         shopCode,
         name: data.name,
         address: data.address,
         lat: data.lat,
         lng: data.lng,
         county: data.county,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    };
-    shops.push(newShop);
-    await promises_1.default.writeFile(shopsPath, JSON.stringify(shops, null, 2));
+        services: data.services || [],
+        rating: 4.5,
+    })
+        .select()
+        .single();
+    if (error)
+        throw error;
     return newShop;
 };
-exports.createShop = createShop;
-const getShops = async () => {
-    try {
-        const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
-        return JSON.parse(shopsData);
-    }
-    catch (error) {
-        return [];
-    }
+export const getShops = async () => {
+    const { data, error } = await supabase
+        .from('Shops')
+        .select('*')
+        .order('name', { ascending: true });
+    if (error)
+        throw error;
+    return data;
 };
-exports.getShops = getShops;
-const getNearbyShops = async (location) => {
-    try {
-        const shopsData = await promises_1.default.readFile(shopsPath, 'utf8');
-        return JSON.parse(shopsData);
+export const getNearbyShops = async (location) => {
+    if (!location) {
+        return getShops();
     }
-    catch (error) {
-        return [];
-    }
+    // Simplified: filtering by county or address match for now if location is a string
+    const { data, error } = await supabase
+        .from('Shops')
+        .select('*')
+        .or(`county.ilike.%${location}%,address.ilike.%${location}%`)
+        .order('rating', { ascending: false });
+    if (error)
+        throw error;
+    return data;
 };
-exports.getNearbyShops = getNearbyShops;
+export const getShopByCode = async (shopCode) => {
+    const { data, error } = await supabase
+        .from('Shops')
+        .select('*')
+        .eq('shopCode', shopCode)
+        .single();
+    if (error) {
+        console.error('getShopByCode Error:', error);
+        return null;
+    }
+    return data;
+};
+export const updateShopServices = async (shopCode, services) => {
+    const { data, error } = await supabase
+        .from('Shops')
+        .update({ services, updatedAt: new Date() })
+        .eq('shopCode', shopCode)
+        .select()
+        .single();
+    if (error)
+        throw error;
+    return data;
+};
 //# sourceMappingURL=shop.js.map
