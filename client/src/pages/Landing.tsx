@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import Footer from '../components/Footer';
 import useAuth from '../hooks/useAuth';
 import apiClient from '../utils/apiClient';
+import AIDiagnostic from '../components/AIDiagnostic';
 
 const Landing = () => {
     const { user } = useAuth();
@@ -37,37 +38,54 @@ const Landing = () => {
                         alt="Electro-Care Hero"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50" />
+                    <div className="absolute inset-0 bg-black/60" />
                 </div>
 
                 <div className="relative z-10 flex-1 flex flex-col justify-center items-center text-center text-white px-4 pt-20">
-                    <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-6 uppercase drop-shadow-2xl">
-                        ElectroCare<span className="text-primary">.TECH</span>
-                    </h1>
-                    <p className="text-xl md:text-3xl font-light tracking-wide max-w-3xl mx-auto mb-12 drop-shadow-lg opacity-90">
-                        Precision. Reliability. Excellence.
-                    </p>
-                    <Link to={user ? "/home" : "/login"}>
-                        <span className="cursor-pointer bg-primary hover:bg-white hover:text-primary text-white px-12 py-5 rounded-full uppercase tracking-widest text-sm font-bold transition-all duration-500 border-2 border-primary shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                            {user ? 'Go to Home Dashboard' : 'Get Started Now'}
+                    <div className="mb-6 inline-block bg-primary/20 backdrop-blur-md border border-primary/30 px-6 py-2 rounded-full shadow-lg">
+                        <span className="text-primary font-bold tracking-widest uppercase text-xs animate-pulse">
+                            🚀 AI-Powered Diagonostics Live
                         </span>
-                    </Link>
+                    </div>
+                    <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 uppercase drop-shadow-2xl">
+                        ELECTRO<span className="text-primary italic">CARE</span>
+                    </h1>
+                    <p className="text-xl md:text-3xl font-light tracking-wide max-w-4xl mx-auto mb-12 drop-shadow-lg opacity-90 leading-relaxed">
+                        Next-Gen <span className="text-primary font-bold">Laptop & Mobile</span> Repair. <br className="hidden md:block" />
+                        AI-Aided Precision. Ethical Recycling. Premium Marketplace.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <Link to={user ? "/home" : "/login"}>
+                            <span className="cursor-pointer bg-primary hover:bg-white hover:text-primary text-white px-12 py-5 rounded-full uppercase tracking-widest text-sm font-black transition-all duration-500 border-2 border-primary shadow-[0_0_40px_rgba(34,197,94,0.4)] block">
+                                {user ? 'View Dashboard' : 'Launch App'}
+                            </span>
+                        </Link>
+                        <Link to="/schedule">
+                            <span className="cursor-pointer bg-transparent hover:bg-white/10 text-white px-12 py-5 rounded-full uppercase tracking-widest text-sm font-black transition-all duration-500 border-2 border-white/30 backdrop-blur-md block">
+                                Repair Now
+                            </span>
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Operational Services Integration in Hero */}
-                <div className="relative z-10 w-full bg-gradient-to-t from-black/80 to-transparent pt-20 pb-10">
+                <div className="relative z-10 w-full bg-gradient-to-t from-black/90 to-transparent pt-20 pb-10">
                     <div className="container mx-auto px-4">
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid md:grid-cols-4 gap-6">
                             {[
-                                { title: 'Repairs', icon: '🛠️', desc: 'AI-aided precision repairs for all devices.', link: '/schedule' },
-                                { title: 'Marketplace', icon: '🛒', desc: 'Buy, sell, or swap devices with ease.', link: '/marketplace' },
-                                { title: 'Recycling', icon: '♻️', desc: 'Securely sell your old or dead devices.', link: '/marketplace?tab=sell' }
+                                { title: 'AI Repair', icon: '🧠', desc: 'Self-diagnostic AI for instant checks.', link: '/schedule' },
+                                { title: 'Laptops', icon: '💻', desc: 'Motherboard & component specialists.', link: '/schedule' },
+                                { title: 'Marketplace', icon: '🛒', desc: 'Buy & sell verified tech assets.', link: '/marketplace' },
+                                { title: 'Recycling', icon: '♻️', desc: 'Turn dead devices into cash/points.', link: '/marketplace?tab=sell' }
                             ].map((service, i) => (
                                 <Link key={i} to={service.link}>
-                                    <div className="group p-8 backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl hover:bg-primary/20 hover:border-primary transition-all duration-500 cursor-pointer h-full">
-                                        <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-500">{service.icon}</div>
-                                        <h3 className="text-xl font-bold mb-2 text-white uppercase tracking-wider">{service.title}</h3>
-                                        <p className="text-white/70 font-light leading-relaxed">{service.desc}</p>
+                                    <div className="group p-8 backdrop-blur-lg bg-white/5 border border-white/10 rounded-3xl hover:bg-primary/10 hover:border-primary transition-all duration-500 cursor-pointer h-full relative overflow-hidden">
+                                        <div className="absolute -right-4 -top-4 text-white/5 text-8xl transition-all group-hover:text-primary/10">{service.icon}</div>
+                                        <div className="relative z-10">
+                                            <div className="text-4xl mb-6 transform group-hover:scale-110 transition-transform duration-500 bg-white/10 w-16 h-16 flex items-center justify-center rounded-2xl shadow-inner">{service.icon}</div>
+                                            <h3 className="text-xl font-black mb-2 text-white uppercase tracking-wider">{service.title}</h3>
+                                            <p className="text-white/60 font-light text-sm leading-relaxed">{service.desc}</p>
+                                        </div>
                                     </div>
                                 </Link>
                             ))}
@@ -77,68 +95,79 @@ const Landing = () => {
             </section>
 
             {/* Marketplace Preview Section */}
-            <section className="w-full bg-gradient-to-b from-gray-50 to-white py-24">
-                <div className="container mx-auto px-4">
+            <section className="w-full bg-white py-24 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(34,197,94,0.03),transparent)]" />
+                <div className="container mx-auto px-4 relative z-10">
                     <div className="flex flex-col items-center mb-16 text-center">
-                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter mb-4">
-                            Shop <span className="text-primary">Marketplace</span>
+                        <div className="bg-primary/10 text-primary px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">Certified Pre-Owned</div>
+                        <h2 className="text-4xl md:text-7xl font-black text-gray-900 uppercase tracking-tighter mb-4">
+                            Global <span className="text-primary italic">Tech</span> Market
                         </h2>
-                        <p className="text-lg text-gray-600 max-w-2xl mb-2">
-                            Discover verified devices from our trusted community and certified shops.
+                        <p className="text-lg text-gray-500 max-w-2xl mb-8 font-light">
+                            Premium laptops and smartphones, rigorously tested and certified by our expert technicians.
                         </p>
-                        <div className="w-24 h-2 bg-primary rounded-full"></div>
+                        <div className="w-16 h-1 bg-primary rounded-full mb-12"></div>
                     </div>
 
                     {isLoadingMarketplace ? (
                         <div className="flex justify-center items-center py-20">
-                            <div className="text-center">
-                                <div className="text-6xl mb-4 animate-pulse">🛒</div>
-                                <p className="text-xl font-bold text-gray-400 uppercase tracking-widest">Loading Marketplace...</p>
+                            <div className="relative">
+                                <div className="w-24 h-24 border-4 border-gray-100 border-t-primary rounded-full animate-spin" />
+                                <div className="absolute inset-0 flex items-center justify-center text-2xl">📱</div>
                             </div>
                         </div>
                     ) : marketplaceListings && marketplaceListings.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
                                 {marketplaceListings.map((listing: any) => (
                                     <div
                                         key={listing.id}
-                                        className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group cursor-pointer border border-gray-100"
+                                        className="bg-white rounded-[2.5rem] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.12)] transition-all duration-700 group cursor-pointer border border-gray-100 flex flex-col"
                                         onClick={() => handlePurchaseAttempt()}
                                     >
-                                        <div className="h-64 bg-gray-100 relative overflow-hidden">
+                                        <div className="h-72 bg-gray-50 relative overflow-hidden">
                                             {listing.imageUrls && listing.imageUrls.length > 0 ? (
                                                 <img
                                                     src={listing.imageUrls[0]}
                                                     alt={listing.device}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <span className="text-6xl opacity-30">📱</span>
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                                                    <span className="text-7xl opacity-10">TECH</span>
                                                 </div>
                                             )}
-                                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full">
-                                                <span className="text-xs font-black uppercase tracking-widest text-primary">
-                                                    {listing.condition}
-                                                </span>
+                                            <div className="absolute top-6 left-6 flex flex-col gap-2">
+                                                <div className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-sm border border-white/50">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                                                        {listing.condition}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="p-6">
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">
-                                                {listing.device}
-                                            </h3>
-                                            <p className="text-sm text-gray-500 uppercase tracking-wider mb-4">
-                                                {listing.category || 'Electronics'}
-                                            </p>
-                                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                                        <div className="p-10 flex-1 flex flex-col">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h3 className="text-2xl font-black text-gray-900 mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                                                        {listing.device}
+                                                    </h3>
+                                                    <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">
+                                                        {listing.mainCategory} • {listing.subCategory}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <p className="text-gray-500 text-sm mb-8 line-clamp-2 font-light leading-relaxed">
                                                 {listing.description}
                                             </p>
-                                            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                                                <span className="text-3xl font-black text-primary">
-                                                    ${listing.price}
-                                                </span>
-                                                <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:shadow-lg">
-                                                    {user ? 'View Details' : 'Login to Buy'}
+                                            <div className="mt-auto pt-6 border-t border-gray-50 flex justify-between items-center">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs text-gray-400 uppercase font-bold tracking-widest">Price</span>
+                                                    <span className="text-3xl font-black text-gray-900">
+                                                        ${listing.price}
+                                                    </span>
+                                                </div>
+                                                <button className="bg-gray-900 hover:bg-primary text-white w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg hover:shadow-primary/40 group-hover:translate-y-[-4px]">
+                                                    <span className="text-xl">→</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -147,70 +176,89 @@ const Landing = () => {
                             </div>
                             <div className="text-center">
                                 <Link to="/marketplace">
-                                    <button className="bg-gray-900 hover:bg-primary text-white px-12 py-5 rounded-full uppercase tracking-widest text-sm font-bold transition-all duration-500 border-2 border-gray-900 hover:border-primary shadow-lg hover:shadow-2xl">
-                                        View All Listings →
+                                    <button className="group relative bg-white text-gray-900 px-14 py-6 rounded-full uppercase tracking-widest text-xs font-black transition-all duration-500 border-2 border-gray-900 hover:border-primary hover:text-white overflow-hidden">
+                                        <span className="relative z-10">Visit Full Marketplace</span>
+                                        <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                                     </button>
                                 </Link>
                             </div>
                         </>
                     ) : (
-                        <div className="text-center py-20">
-                            <div className="text-6xl mb-4">📦</div>
-                            <p className="text-xl font-bold text-gray-400 uppercase tracking-widest">No listings available yet</p>
-                            <p className="text-gray-500 mt-2">Check back soon for amazing deals!</p>
+                        <div className="text-center py-20 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
+                            <div className="text-7xl mb-6 opacity-20">📦</div>
+                            <p className="text-xl font-black text-gray-300 uppercase tracking-[0.3em]">Marketplace Empty</p>
+                            <p className="text-gray-400 mt-4 font-light italic">Authenticating new listings...</p>
                         </div>
                     )}
                 </div>
             </section>
 
             {/* Why Choose Us */}
-            <section className="w-full bg-white py-24 border-y border-gray-100">
+            <section className="w-full bg-gray-50 py-32">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col items-center mb-20 text-center">
-                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter mb-4">
-                            Why Choose <span className="text-primary">ElectroCare?</span>
+                    <div className="flex flex-col items-center mb-24 text-center">
+                        <div className="bg-primary/10 text-primary px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">Operational Excellence</div>
+                        <h2 className="text-4xl md:text-7xl font-black text-gray-900 uppercase tracking-tighter mb-4">
+                            The <span className="text-primary italic">ElectroCare</span> Edge
                         </h2>
-                        <div className="w-24 h-2 bg-primary rounded-full" />
+                        <div className="w-16 h-1 bg-primary rounded-full" />
                     </div>
 
-                    <div className="grid gap-24">
+                    {/* AI Diagnostic Section Integrated */}
+                    <div className="mb-32">
+                        <AIDiagnostic />
+                    </div>
+
+                    <div className="grid gap-32">
                         {[
-                            {
-                                title: "AI-Aided Excellence",
-                                subtitle: "Precision in every repair",
-                                desc: "Our technicians leverage AI-aided diagnostics and repair tools to ensure your device is fixed with unmatched precision and speed.",
-                                img: "/images/autorepair.gif"
+    {
+                                title: "AI-Native Diagnostics",
+                                subtitle: "Zero-Latency Error Detection",
+                                desc: "Our proprietary AI engine runs deep-level hardware and software diagnostics in milliseconds, identifying hidden circuit failures that human eyes miss. Precision is our baseline.",
+                                img: "/images/autorepair.gif",
+                                tags: ["Self-Diag", "Circuit Scan", "OS Opt"]
                             },
                             {
-                                title: "Secure Marketplace",
-                                subtitle: "Buy. Sell. Swap. Swap.",
-                                desc: "Easily reach new users or upgrade your tech. We facilitate secure transactions and verified listings for your peace of mind.",
+                                title: "Sustainable Tech Lifecycle",
+                                subtitle: "End-to-End Asset Management",
+                                desc: "We provide a circular economy for electronics. From elite repairs to ethical recycling, we ensure your tech never ends up in a landfill. Dead devices are harvested for points or cash.",
                                 img: "/images/sell1.gif",
+                                tags: ["Recycle", "Cash-Back", "Verified"]
                             },
                             {
-                                title: "Doorstep Delivery",
-                                subtitle: "We facilitate the delivery",
-                                desc: "No need to leave your home. We handle the logistics, providing doorstep pickup and delivery for all your repair and marketplace needs.",
+                                title: "Smart Logistics Network",
+                                subtitle: "Real-Time Tracking & Fulfillment",
+                                desc: "Connected to a fleet of real-time and scheduled riders, your device never spends a minute more than necessary in transit. End-to-end encryption for every delivery.",
                                 img: "/images/delivery.gif",
+                                tags: ["Live Track", "Secure Box", "Insured"]
                             }
                         ].map((item, i) => (
-                            <div key={i} className={`flex flex-col md:flex-row items-center gap-12 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
-                                <div className="flex-1 space-y-6">
-                                    <span className="text-primary font-bold tracking-widest uppercase text-sm">{item.subtitle}</span>
-                                    <h3 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">{item.title}</h3>
-                                    <p className="text-lg text-gray-600 leading-relaxed font-light">{item.desc}</p>
-                                    <div className="pt-4">
-                                        <button className="flex items-center gap-2 font-bold uppercase tracking-widest text-sm hover:text-primary transition-colors">
-                                            Learn More <span className="text-xl">→</span>
+                            <div key={i} className={`flex flex-col md:flex-row items-center gap-20 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
+                                <div className="flex-1 space-y-8">
+                                    <div className="space-y-2">
+                                        <span className="text-primary font-black tracking-[0.2em] uppercase text-[10px]">{item.subtitle}</span>
+                                        <h3 className="text-4xl md:text-6xl font-black text-gray-900 leading-[0.9] uppercase tracking-tighter">{item.title}</h3>
+                                    </div>
+                                    <p className="text-lg text-gray-500 leading-relaxed font-light">{item.desc}</p>
+                                    <div className="flex flex-wrap gap-3">
+                                        {item.tags.map((tag, t) => (
+                                            <span key={t} className="bg-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-gray-400 border border-gray-200">#{tag}</span>
+                                        ))}
+                                    </div>
+                                    <div className="pt-6">
+                                        <button className="group flex items-center gap-4 font-black uppercase tracking-widest text-xs py-2">
+                                            Explore Innovation 
+                                            <span className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:translate-x-2">→</span>
                                         </button>
                                     </div>
                                 </div>
-                                <div className="flex-1 w-full h-[400px] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] group">
+                                <div className="flex-1 w-full h-[500px] rounded-[3rem] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.1)] group relative">
                                     <img
                                         src={item.img}
                                         alt={item.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                     />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                 </div>
                             </div>
                         ))}
@@ -224,7 +272,7 @@ const Landing = () => {
                     <p className="text-gray-500 max-w-2xl mx-auto">We offer comprehensive solutions for all your electronic needs, from AI-powered repairs to a seamless marketplace.</p>
                 </div>
 
-                <div className="container mx-auto px-4 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="container mx-auto px-4 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                         {
                             title: "Mobile Solutions",
@@ -238,13 +286,6 @@ const Landing = () => {
                             desc: "Pro laptop repairs, new arrivals, and trade-in options.",
                             icon: "💻",
                             img: "/images/fixit.gif",
-                            actions: ["Repair", "Buy", "Sell", "Swap"]
-                        },
-                        {
-                            title: "Home Appliances",
-                            desc: "Expert restoration for all your essential home tech.",
-                            icon: "🏠",
-                            img: "/images/drfix.gif",
                             actions: ["Repair", "Buy", "Sell", "Swap"]
                         },
                         {
