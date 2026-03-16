@@ -9,7 +9,7 @@ const isDist = __dirname.includes('dist');
 // If in server/utils/paths.ts -> ROOT is ..
 // If in server/dist/utils/paths.ts -> ROOT is ../../..
 export const SERVER_ROOT = isDist
-    ? path.join(__dirname, '../../../../') // server/dist/utils/paths.ts -> ../../../../ -> monorepo root
+    ? path.join(__dirname, '../../../') // server/dist/utils/paths.js -> ../../../ -> monorepo root
     : path.join(__dirname, '../../');    // server/utils/paths.ts -> ../../ -> monorepo root
 
 
