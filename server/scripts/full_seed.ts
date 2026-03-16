@@ -1,4 +1,4 @@
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 import fs from 'fs';
 import path from 'path';
 

@@ -1,8 +1,8 @@
 
 import { Request, Response } from 'express';
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 import axios from 'axios';
-import { updateApplicationStatus } from '../models/roleApplication';
+import { updateApplicationStatus } from '../models/roleApplication.js';
 
 // Admin approves sales, awards points or cash
 export const approveSale = async (req: Request, res: Response) => {

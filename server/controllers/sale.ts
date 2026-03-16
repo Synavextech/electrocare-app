@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createSale, getSalesByUser, SaleSchema } from '../models/sale';
+import { createSale, getSalesByUser, SaleSchema } from '../models/sale.js';
 
 export const createDeviceSale = async (req: Request, res: Response) => {
     try {

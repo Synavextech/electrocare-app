@@ -13,23 +13,23 @@ import cookieParser from 'cookie-parser';
 import fs from 'fs/promises';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { initSocket } from './socket';
-import authMiddleware from './middleware/auth';
-import { roleCheck } from './middleware/roleCheck';
-import { DATA_PATHS, resolveFromRoot } from './utils/paths';
-import commonRoutes from './routes/common';
+import { initSocket } from './socket.js';
+import authMiddleware from './middleware/auth.js';
+import { roleCheck } from './middleware/roleCheck.js';
+import { DATA_PATHS, resolveFromRoot } from './utils/paths.js';
+import commonRoutes from './routes/common.js';
 
-import authRoutes from './routes/auth';
-import repairsRoutes from './routes/repairs';
-import marketplaceRoutes from './routes/marketplace';
-import uploadRoutes from './routes/upload';
-import walletRoutes from './routes/wallet';
-import recruitmentRoutes from './routes/recruitment';
-import adminRoutes from './routes/admin';
-import notificationRoutes from './routes/notification';
-import shopRoutes from './routes/shop';
-import technicianRoutes from './routes/technician';
-import saleRoutes from './routes/sale';
+import authRoutes from './routes/auth.js';
+import repairsRoutes from './routes/repairs.js';
+import marketplaceRoutes from './routes/marketplace.js';
+import uploadRoutes from './routes/upload.js';
+import walletRoutes from './routes/wallet.js';
+import recruitmentRoutes from './routes/recruitment.js';
+import adminRoutes from './routes/admin.js';
+import notificationRoutes from './routes/notification.js';
+import shopRoutes from './routes/shop.js';
+import technicianRoutes from './routes/technician.js';
+import saleRoutes from './routes/sale.js';
 const app = express();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -89,10 +89,10 @@ app.use('/api/technician', authMiddleware, technicianRoutes);
 app.use('/api/sales', authMiddleware, saleRoutes);
 
 
-import { getDeviceTypes, getDeviceModels, updateDeviceModelsBulk } from './models/deviceInfo';
-import { getDeliveryPersonnelByShop } from './models/delivery';
-import { createTechnician } from './models/technician';
-import { getShopByCode, updateShopServices } from './models/shop';
+import { getDeviceTypes, getDeviceModels, updateDeviceModelsBulk } from './models/deviceInfo.js';
+import { getDeliveryPersonnelByShop } from './models/delivery.js';
+import { createTechnician } from './models/technician.js';
+import { getShopByCode, updateShopServices } from './models/shop.js';
 
 // ... (keep middle logic until app.use routes)
 

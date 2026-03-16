@@ -1,6 +1,6 @@
 import express from 'express';
-import { listListings, postListing, purchaseListing } from '../controllers/marketplace';
-import authMiddleware from '../middleware/auth';
+import { listListings, postListing, purchaseListing } from '../controllers/marketplace.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 

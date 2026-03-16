@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createTrackingLog, getTrackingByRepair } from '../models/tracking';
-import { io } from '../app';
+import { createTrackingLog, getTrackingByRepair } from '../models/tracking.js';
+import { io } from '../app.js';
 
 export const getTracking = async (req: Request, res: Response) => {
   try {

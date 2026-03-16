@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { getTechniciansByShop } from '../models/technician';
-import { updateRepair } from '../models/repair';
-import { supabase } from '../db';
+import { getTechniciansByShop } from '../models/technician.js';
+import { updateRepair } from '../models/repair.js';
+import { supabase } from '../db.js';
 
 export const listTechnicians = async (req: Request, res: Response) => {
   try {

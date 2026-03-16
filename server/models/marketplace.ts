@@ -1,6 +1,6 @@
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 import { z } from 'zod';
-import { getNearbyShops } from './shop';
+import { getNearbyShops } from './shop.js';
 
 export interface DeviceSale {
     id: string;

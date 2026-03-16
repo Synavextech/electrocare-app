@@ -1,10 +1,10 @@
 import express from 'express';
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 import { z } from 'zod';
-import { createRepair, getRepairById, updateRepair } from '../models/repair';
-import { scheduleRepair, getMyRepairs, acceptRepair } from '../controllers/repair';
-import authMiddleware from '../middleware/auth';
-import { roleCheck } from '../middleware/roleCheck';
+import { createRepair, getRepairById, updateRepair } from '../models/repair.js';
+import { scheduleRepair, getMyRepairs, acceptRepair } from '../controllers/repair.js';
+import authMiddleware from '../middleware/auth.js';
+import { roleCheck } from '../middleware/roleCheck.js';
 
 const router = express.Router();
 

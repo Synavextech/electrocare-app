@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { createTransaction, getTransactionsByUser, TransactionSchema } from '../models/wallet';
-import { getUserById } from '../models/user';
-import { supabase } from '../db';
+import { createTransaction, getTransactionsByUser, TransactionSchema } from '../models/wallet.js';
+import { getUserById } from '../models/user.js';
+import { supabase } from '../db.js';
 
 export const getWallet = async (req: Request, res: Response) => {
   try {

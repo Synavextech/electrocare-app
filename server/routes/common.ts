@@ -1,7 +1,7 @@
 import express from 'express';
-import { getDeviceTypes, getDeviceModels, updateDeviceModelsBulk } from '../models/deviceInfo';
-import authMiddleware from '../middleware/auth';
-import { roleCheck } from '../middleware/roleCheck';
+import { getDeviceTypes, getDeviceModels, updateDeviceModelsBulk } from '../models/deviceInfo.js';
+import authMiddleware from '../middleware/auth.js';
+import { roleCheck } from '../middleware/roleCheck.js';
 
 const router = express.Router();
 
@@ -33,7 +33,7 @@ router.post('/admin/models', authMiddleware, roleCheck(['admin']), async (req, r
     }
 });
 
-import { getDeliveryPersonnelByShop } from '../models/delivery';
+import { getDeliveryPersonnelByShop } from '../models/delivery.js';
 
 router.get('/delivery-personnel', async (req, res) => {
     try {

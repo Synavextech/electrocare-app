@@ -1,6 +1,6 @@
 import express from 'express';
-import { listShops, getNearby, registerShop } from '../controllers/shop';
-import authMiddleware from '../middleware/auth';
+import { listShops, getNearby, registerShop } from '../controllers/shop.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 

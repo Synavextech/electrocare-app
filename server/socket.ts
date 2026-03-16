@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { supabase } from './db';
+import { supabase } from './db.js';
 
 export function initSocket(io: Server) {
   io.on('connection', (socket: Socket) => {

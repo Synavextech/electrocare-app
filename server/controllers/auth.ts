@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { supabase } from '../db';
-import { UserSchema } from '../models/user';
-import { createReferral } from '../models/referral';
+import { supabase } from '../db.js';
+import { UserSchema } from '../models/user.js';
+import { createReferral } from '../models/referral.js';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({

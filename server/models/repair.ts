@@ -1,4 +1,4 @@
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 import { z } from 'zod';
 
 export interface RepairRequest {

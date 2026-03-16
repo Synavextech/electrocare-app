@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,

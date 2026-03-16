@@ -8,7 +8,7 @@ import path from 'path';
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
-import { resolveFromRoot } from './utils/paths';
+import { resolveFromRoot } from './utils/paths.js';
 
 dotenv.config({ path: resolveFromRoot('.env') });
 

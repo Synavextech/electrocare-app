@@ -1,7 +1,7 @@
 import express from 'express';
-import { supabase } from '../db';
-import authMiddleware from '../middleware/auth';
-import { topUpWallet } from '../controllers/wallet'; // Added topUpWallet import
+import { supabase } from '../db.js';
+import authMiddleware from '../middleware/auth.js';
+import { topUpWallet } from '../controllers/wallet.js'; // Added topUpWallet import
 
 const router = express.Router();
 

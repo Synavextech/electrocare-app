@@ -1,5 +1,5 @@
 import express from 'express';
-import authMiddleware from '../middleware/auth';
+import authMiddleware from '../middleware/auth.js';
 import {
     approveSale,
     approveWithdrawal,
@@ -14,9 +14,9 @@ import {
     getRoleApplications,
     approveRoleApplication,
     rejectRoleApplication
-} from '../controllers/admin';
+} from '../controllers/admin.js';
 
-import { roleCheck } from '../middleware/roleCheck';
+import { roleCheck } from '../middleware/roleCheck.js';
 
 const router = express.Router();
 router.use(authMiddleware);

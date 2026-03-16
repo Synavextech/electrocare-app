@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getNearbyShops, getShops, createShop, ShopSchema } from '../models/shop';
+import { getNearbyShops, getShops, createShop, ShopSchema } from '../models/shop.js';
 
 export const listShops = async (req: Request, res: Response) => {
   try {

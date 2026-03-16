@@ -1,4 +1,4 @@
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 
 export const getTrackingByRepair = async (repairRequestId: string) => {
   const { data, error } = await supabase

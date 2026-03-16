@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 
 export default async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   let token = req.cookies?.access_token;

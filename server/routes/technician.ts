@@ -1,8 +1,8 @@
 import express from 'express';
-import authMiddleware from '../middleware/auth';
-import { listTechnicians, getMyAssignments, acceptRepair } from '../controllers/technician';
+import authMiddleware from '../middleware/auth.js';
+import { listTechnicians, getMyAssignments, acceptRepair } from '../controllers/technician.js';
 
-import { roleCheck } from '../middleware/roleCheck';
+import { roleCheck } from '../middleware/roleCheck.js';
 
 const router = express.Router();
 router.use(authMiddleware);

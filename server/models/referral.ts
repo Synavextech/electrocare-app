@@ -1,4 +1,4 @@
-import { supabase } from '../db';
+import { supabase } from '../db.js';
 
 export const createReferral = async (data: { referrerId: string; refereeId: string }) => {
   const { data: referral, error } = await supabase

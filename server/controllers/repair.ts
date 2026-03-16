@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createRepair, getRepairById, getRepairsByUser, updateRepair, RepairSchema } from '../models/repair';
-import { io } from '../app';
+import { createRepair, getRepairById, getRepairsByUser, updateRepair, RepairSchema } from '../models/repair.js';
+import { io } from '../app.js';
 
 export const scheduleRepair = async (req: Request, res: Response) => {
   try {

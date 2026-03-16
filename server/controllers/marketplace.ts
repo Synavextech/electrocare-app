@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { supabase } from '../db';
-import { createListing, getListings, ListingSchema } from '../models/marketplace';
+import { supabase } from '../db.js';
+import { createListing, getListings, ListingSchema } from '../models/marketplace.js';
 
 export const listListings = async (req: Request, res: Response) => {
     try {
