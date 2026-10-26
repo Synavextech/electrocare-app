@@ -57,6 +57,15 @@ export default defineConfig({
     outDir: '../dist', // Build to root dist
     sourcemap: true, // For debugging
     chunkSizeWarningLimit: 1000, // Larger chunks ok for code splitting
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-tanstack': ['@tanstack/react-router', '@tanstack/react-query'],
+          'vendor-ui': ['lucide-react', 'framer-motion'],
+        },
+      },
+    },
   },
   resolve: {
     alias: {

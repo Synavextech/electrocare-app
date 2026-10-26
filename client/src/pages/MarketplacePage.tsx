@@ -550,7 +550,7 @@ const MarketplacePage: React.FC = () => {
     <div className="space-y-12 animate-in fade-in duration-700 pb-10">
       {/* Hero Section */}
       <section className="glass-card rounded-[2.5rem] p-8 md:p-12 border border-white/10 shadow-premium relative overflow-hidden group text-center md:text-left">
-        <div className="absolute inset-0 opacity-10 bg-[url('/check_out.gif')] bg-cover bg-center group-hover:scale-105 transition-premium duration-1000"></div>
+        <div className="absolute inset-0 opacity-10 bg-[url('/images/check_out.gif')] bg-cover bg-center group-hover:scale-105 transition-premium duration-1000"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-canvas via-canvas/90 to-transparent"></div>
 
         <div className="relative z-10">
