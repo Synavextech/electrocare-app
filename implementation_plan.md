@@ -119,4 +119,24 @@
   - `client/src/pages/AdminDashboard.tsx`: Added "Service Inquiries" command tab allowing admins to view and update inquiry statuses.
 - **Status**: Completed and Verified. `npm run build` executed and passed cleanly with exit code 0 (`tsc && vite build` for client + `tsc` for server + PWA service worker generated). Production ready.
 
+---
 
+## Phase 9: Production Build & Dependency Alignment for React 19 & TypeScript [READY FOR REVIEW]
+- **File(s)**:
+  - `package.json`: Move build-critical types and plugins to `dependencies`, align React 19 type definitions.
+  - `package-lock.json`: Update lockfile to ensure reproducible deterministic installs across environments.
+- **Problem Statement**:
+  - In production (`/root/electrocare-app`), running `npm run build` fails with 7 TypeScript errors (`TS7016` on `framer-motion`, `TS2305` on `react-hook-form`'s `useForm`, and `TS2724` on `@hookform/resolvers/zod`'s `zodResolver`).
+  - Because `NODE_ENV=production` is set in production deployment, `npm install` skips all `devDependencies`.
+  - Type definitions (`@types/react`, `@types/react-dom`, `@types/node`) and Vite build plugins (`@vitejs/plugin-react`, `@tanstack/router-vite-plugin`, `@tailwindcss/postcss`, `autoprefixer`) were placed in `devDependencies`, starving `tsc` and `vite` during production builds.
+  - Additionally, `@types/react` is currently locked to `^18.3.3` while React is at `^19.1.0`.
+- **To-Do List**:
+  1. **Update `package.json`**:
+     - Promote `@types/react` and `@types/react-dom` to `dependencies` and align them with React 19 (`^19.0.0`).
+     - Promote build plugins and core types required for the build script (`@vitejs/plugin-react`, `@tanstack/router-vite-plugin`, `@tailwindcss/postcss`, `autoprefixer`, `@types/node`) to `dependencies`.
+     - Retain local-only development tools (`concurrently`, `nodemon`, `tsx`) in `devDependencies`.
+  2. **Update lockfile & dependencies**:
+     - Run `npm install` to update `package-lock.json` and sync the node modules.
+  3. **Verification**:
+     - Run `npm run build` (`tsc && vite build` for client, `tsc` for server) to verify zero TypeScript errors and clean build output.
+- **Status**: Ready for review. Awaiting user confirmation to proceed with implementation and commands.
