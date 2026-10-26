@@ -21,12 +21,13 @@ export const register = async (req: Request, res: Response) => {
     // If we use service role key in 'supabase' client (from db.ts), we have admin privileges.
     // Let's use signUp.
 
+    const fallbackName = data.name || data.email.split('@')[0];
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: {
-          name: data.name,
+          name: fallbackName,
           phone: data.phone,
           role: 'user', // default role
         }
@@ -44,29 +45,30 @@ export const register = async (req: Request, res: Response) => {
     // Generate referral code
     const referralCode = `REF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-    // We need to ensure the user profile is created. Supabase usually handles this via triggers if set up,
-    // but our schema has RLS.
-    // Since we are using the service role client in `db.ts` (likely), we can insert into public.User if needed.
-    // Let's check if the trigger exists. The schema had a comment about removing trigger.
-    // So we MUST manually create the public.User record here.
-
-    // Wait for a moment or just upsert.
+    // Ensure the public user profile exists and is updated
     const { error: profileError } = await supabase
       .from('User')
       .upsert({
         id: authData.user.id,
         email: data.email,
-        name: data.name,
+        name: fallbackName,
         phone: data.phone,
         role: 'user',
         referralCode: referralCode
-      });
+      }, { onConflict: 'id' });
 
     if (profileError) {
       console.error('Profile creation error:', profileError);
-      // Don't fail the whole request if auth succeeded, but it's risky.
-      // For now, log it.
     }
+
+    // Ensure wallet exists for user
+    await supabase
+      .from('Wallet')
+      .upsert({
+        userId: authData.user.id,
+        balance: 0,
+        points: 0
+      }, { onConflict: 'userId' });
 
     // Handle referral if present
     if (req.body.referralCode) {
@@ -74,9 +76,8 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Send welcome email
-    // Check if transporter is configured properly, otherwise this might throw
     try {
-      if (process.env.SMTP_HOST !== 'smtp.example.com') {
+      if (process.env.SMTP_HOST && process.env.SMTP_HOST !== 'smtp.example.com') {
         await transporter.sendMail({
           to: data.email,
           subject: 'Welcome to ElectroCare',
@@ -87,13 +88,16 @@ export const register = async (req: Request, res: Response) => {
       console.warn('Email sending failed, but registration succeeded:', emailError);
     }
 
-    // Set HttpOnly cookie
-    res.cookie('access_token', authData.session?.access_token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 3600000, // 1 hour
-    });
+      sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+      maxAge: 7 * 24 * 3600 * 1000, // 7 days
+    };
+
+    if (authData.session?.access_token) {
+      res.cookie('access_token', authData.session.access_token, cookieOptions);
+    }
 
     res.json({ user: authData.user, message: 'User registered successfully' });
   } catch (err) {
@@ -122,22 +126,38 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Auth session failed' });
     }
 
-    // Fetch profile to get role
+    // Fetch profile to get role, phone, referralCode, and wallet
     const { data: profile } = await supabase
       .from('User')
-      .select('*')
+      .select('*, wallet:Wallet(*)')
       .eq('id', data.user.id)
       .single();
 
-    // Set HttpOnly cookie
-    res.cookie('access_token', data.session.access_token, {
+    const walletData = Array.isArray(profile?.wallet) ? profile.wallet[0] : profile?.wallet;
+    const refCode = profile?.referralCode || profile?.referral_code || data.user.user_metadata?.referralCode;
+
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 3600000, // 1 hour
-    });
+      sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+      maxAge: 7 * 24 * 3600 * 1000, // 7 days
+    };
 
-    res.json({ user: { ...data.user, ...profile } });
+    // Set HttpOnly cookie
+    res.cookie('access_token', data.session.access_token, cookieOptions);
+
+    res.json({
+      user: {
+        ...data.user,
+        ...profile,
+        phone: profile?.phone || data.user.user_metadata?.phone,
+        referralCode: refCode,
+        referral_code: refCode,
+        wallet: walletData,
+        points: walletData?.points || 0,
+        wallet_balance: walletData?.balance || 0,
+      }
+    });
   } catch (err) {
     console.error('Login failed:', (err as Error).message);
     res.status(500).json({ error: 'Login failed' });
@@ -159,11 +179,19 @@ export const handleReferral = async (referrerCode: string, referredId: string) =
       status: 'completed'
     });
 
-    // Award 5% bonus points (5 points flat)
-    if (referrer.wallet) {
+    const userWallet = Array.isArray(referrer.wallet) ? referrer.wallet[0] : referrer.wallet;
+
+    // Award 10 points per system design guide
+    if (userWallet) {
       await supabase.from('Wallet').update({
-        points: referrer.wallet.points + 5
-      }).eq('id', referrer.wallet.id);
+        points: (userWallet.points || 0) + 10
+      }).eq('id', userWallet.id);
+
+      await supabase.from('Transaction').insert({
+        walletId: userWallet.id,
+        amount: 10,
+        type: 'deposit'
+      });
     }
   }
 };
@@ -185,8 +213,45 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { password, accessToken } = req.body;
+    if (!password || typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    if (!accessToken) {
+      return res.status(400).json({ error: 'Recovery session token is required' });
+    }
+
+    // Verify recovery token with Supabase Auth
+    const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+    if (userError || !userData?.user) {
+      return res.status(401).json({ error: 'Invalid or expired password reset link. Please request a new one.' });
+    }
+
+    // Update password using Admin client
+    const { error: updateError } = await supabase.auth.admin.updateUserById(userData.user.id, {
+      password,
+    });
+
+    if (updateError) {
+      return res.status(400).json({ error: updateError.message });
+    }
+
+    res.json({ success: true, message: 'Password updated successfully. You can now log in.' });
+  } catch (err: any) {
+    console.error('Reset password failed:', err.message);
+    res.status(500).json({ error: err.message || 'Failed to reset password' });
+  }
+};
+
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie('access_token');
+  res.clearCookie('access_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+  });
   res.json({ message: 'Logged out successfully' });
 };
 
@@ -194,12 +259,26 @@ export const getMe = async (req: Request, res: Response) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
 
   // req.user is set by authMiddleware
-  // Fetch full profile
+  // Fetch full profile and wallet
   const { data: profile } = await supabase
     .from('User')
-    .select('*')
+    .select('*, wallet:Wallet(*)')
     .eq('id', req.user.id)
     .single();
 
-  res.json({ user: { ...req.user, ...profile } });
+  const walletData = Array.isArray(profile?.wallet) ? profile.wallet[0] : profile?.wallet;
+  const refCode = profile?.referralCode || profile?.referral_code;
+
+  res.json({
+    user: {
+      ...req.user,
+      ...profile,
+      phone: profile?.phone || (req.user as any)?.phone,
+      referralCode: refCode,
+      referral_code: refCode,
+      wallet: walletData,
+      points: walletData?.points || 0,
+      wallet_balance: walletData?.balance || 0,
+    }
+  });
 };

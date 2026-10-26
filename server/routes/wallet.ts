@@ -1,7 +1,7 @@
 import express from 'express';
 import { supabase } from '../db.js';
 import authMiddleware from '../middleware/auth.js';
-import { topUpWallet } from '../controllers/wallet.js'; // Added topUpWallet import
+import { topUpWallet, requestWithdrawal, redeemElectroCoins } from '../controllers/wallet.js';
 
 const router = express.Router();
 
@@ -64,7 +64,7 @@ router.get('/transactions', authMiddleware, async (req, res) => {
     }
 });
 
-// Redeem points (placeholder logic)
+// Redeem points for balance
 router.post('/redeem', authMiddleware, async (req, res) => {
     try {
         const { data: wallet, error: walletError } = await supabase
@@ -93,12 +93,11 @@ router.post('/redeem', authMiddleware, async (req, res) => {
 
         if (updateError) throw updateError;
 
-        // Add transaction record
+        // Add transaction record with valid check-constraint type 'redeem'
         await supabase.from('Transaction').insert({
             walletId: wallet.id,
             amount: redemptionAmount,
-            type: 'POINTS',
-            description: `Redeemed ${wallet.points - remainingPoints} points`
+            type: 'redeem'
         });
 
         res.json({ message: 'Points redeemed successfully', amount: redemptionAmount });
@@ -107,5 +106,14 @@ router.post('/redeem', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Failed to redeem points' });
     }
 });
+
+// Top-up wallet balance
+router.post('/top-up', authMiddleware, topUpWallet);
+
+// Request withdrawal
+router.post('/withdraw', authMiddleware, requestWithdrawal);
+
+// Redeem electro-coins
+router.post('/redeem-coins', authMiddleware, redeemElectroCoins);
 
 export default router;

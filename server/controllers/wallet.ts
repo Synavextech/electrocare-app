@@ -54,24 +54,32 @@ export const requestWithdrawal = async (req: Request, res: Response) => {
     const user = await getUserById(req.user!.id);
     if (!user?.wallet) return res.status(404).json({ error: 'Wallet not found' });
 
-    // Validate minimum withdrawal
-    if (amount < 10) {
-      return res.status(400).json({ error: 'Minimum withdrawal is $10' });
+    const withdrawAmount = Number(amount);
+    if (isNaN(withdrawAmount) || withdrawAmount < 50) {
+      return res.status(400).json({ error: 'Minimum withdrawal is KES 50' });
     }
 
-    // Check sufficient balance
-    if (user.wallet.balance < amount) {
-      return res.status(400).json({ error: 'Insufficient balance' });
+    if (Number(user.wallet.balance) < withdrawAmount) {
+      return res.status(400).json({ error: `Insufficient balance (KES ${user.wallet.balance})` });
     }
 
-    // Create withdrawal request (pending admin approval)
+    // Deduct from wallet immediately to prevent double spending
+    const newBalance = Number(user.wallet.balance) - withdrawAmount;
+    const { error: wErr } = await supabase
+      .from('Wallet')
+      .update({ balance: newBalance })
+      .eq('id', user.wallet.id);
+
+    if (wErr) throw wErr;
+
+    // Create withdrawal request record
     const tx = await createTransaction({
       walletId: user.wallet.id,
-      type: `withdrawal_${method}`, // e.g., 'withdrawal_mpesa'
-      amount
+      type: 'withdrawal',
+      amount: withdrawAmount
     });
 
-    res.json({ message: 'Withdrawal request submitted for admin approval', transaction: tx });
+    res.json({ message: 'Withdrawal request submitted for admin approval', transaction: tx, balance: newBalance });
   } catch (err) {
     console.error('Request failed:', (err as Error).message);
     res.status(500).json({ error: 'Request failed' });
@@ -107,7 +115,7 @@ export const redeemElectroCoins = async (req: Request, res: Response) => {
 
     await createTransaction({
       walletId: user.wallet.id,
-      type: 'electro_coin_redemption',
+      type: 'redeem',
       amount: cashValue
     });
 
@@ -137,7 +145,7 @@ export const topUpWallet = async (req: Request, res: Response) => {
 
     await createTransaction({
       walletId: user.wallet.id,
-      type: 'top_up',
+      type: 'deposit',
       amount
     });
 

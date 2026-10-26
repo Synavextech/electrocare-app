@@ -20,10 +20,27 @@ export const repairSchema = z.object({
 export const saleSchema = z.object({
   device: z.string().min(1, { message: 'Device name is required' }),
   description: z.string().min(1, { message: 'Description is required' }),
-  price: z.number().positive({ message: 'Price must be positive' }),
+  price: z.number().min(0, { message: 'Price cannot be negative' }),
+  piecesAvailable: z.number().int().min(1, { message: 'At least 1 piece required' }).default(1),
   condition: z.enum(['New', 'Used', 'Refurbished', 'Unusable']),
-  mainCategory: z.enum(['Mobile Phone', 'Laptop']),
-  subCategory: z.enum(['Device', 'Accessory']),
+  mainCategory: z.enum([
+    'Phones and accessories',
+    'Computers/Laptops',
+    'Security devices and accessories',
+    'Gaming devices',
+    'Internet connection devices & services',
+    'Our flagship devices',
+    // Backwards compatibility
+    'Mobile Phone',
+    'Laptop'
+  ]),
+  subCategory: z.enum([
+    'Main Devices',
+    'Device Accessories',
+    // Backwards compatibility
+    'Device',
+    'Accessory'
+  ]),
 });
 
 export const loginSchema = z.object({

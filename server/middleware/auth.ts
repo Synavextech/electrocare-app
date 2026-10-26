@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../db.js';
+import jwt from 'jsonwebtoken';
 
 export default async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   let token = req.cookies?.access_token;
@@ -13,32 +14,53 @@ export default async function authMiddleware(req: Request, res: Response, next: 
   }
 
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    let userId: string | null = null;
+    let userEmail: string | undefined;
 
-    if (authError || !user) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+    // Fast local verification with JWT_SECRET
+    if (process.env.JWT_SECRET) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
+        if (decoded?.sub) {
+          userId = decoded.sub;
+          userEmail = decoded.email;
+        }
+      } catch (jwtErr) {
+        // Fall back to Supabase cloud auth
+      }
+    }
+
+    if (!userId) {
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+      }
+
+      userId = user.id;
+      userEmail = user.email;
     }
 
     // Fetch user profile to get the role
     const { data: profile, error: profileError } = await supabase
       .from('User')
       .select('role, name, email')
-      .eq('id', user.id)
+      .eq('id', userId)
       .single();
 
     if (profileError || !profile) {
       // Fallback or error if profile doesn't exist?
       // According to system rules, profile should exist.
       req.user = {
-        id: user.id,
+        id: userId,
         role: 'user', // Default to user if profile not found
-        email: user.email
+        email: userEmail
       };
     } else {
       req.user = {
-        id: user.id,
+        id: userId,
         role: profile.role,
-        email: profile.email || user.email,
+        email: profile.email || userEmail,
         name: profile.name
       };
     }

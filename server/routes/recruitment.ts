@@ -13,14 +13,20 @@ router.post('/apply-technician', async (req: express.Request, res: express.Respo
       userId: req.user.id,
       requestedRole: 'technician',
       status: 'pending',
+      phone: req.body.phone || null,
+      shopId: req.body.shopId || null,
+      locality: req.body.locality || null,
+      preferredDevices: Array.isArray(req.body.preferredDevices) ? req.body.preferredDevices : (req.body.preferredDevices ? [req.body.preferredDevices] : []),
+      proficiency: Array.isArray(req.body.proficiency) ? req.body.proficiency : (req.body.proficiency ? [req.body.proficiency] : []),
+      experienceLevel: req.body.experienceLevel || null,
       documents: req.body.documents || [],
       notes: req.body.notes || ''
     });
 
     res.json({ success: true, message: 'Technician application submitted for review' });
   } catch (err) {
-    console.error('Technician application error:', err);
-    res.status(500).json({ error: 'Application failed' });
+    console.error('Technician application error:', (err as Error).message);
+    res.status(500).json({ error: (err as Error).message || 'Application failed' });
   }
 });
 
@@ -32,14 +38,19 @@ router.post('/apply-delivery', async (req: express.Request, res: express.Respons
       userId: req.user.id,
       requestedRole: 'delivery',
       status: 'pending',
+      phone: req.body.phone || null,
+      shopId: req.body.shopId || null,
+      locality: req.body.locality || null,
+      vehicleType: req.body.vehicleType || null,
+      deliveryFrequency: req.body.deliveryFrequency || null,
       documents: req.body.documents || [],
       notes: req.body.notes || ''
     });
 
     res.json({ success: true, message: 'Delivery personnel application submitted for review' });
   } catch (err) {
-    console.error('Delivery application error:', err);
-    res.status(500).json({ error: 'Application failed' });
+    console.error('Delivery application error:', (err as Error).message);
+    res.status(500).json({ error: (err as Error).message || 'Application failed' });
   }
 });
 

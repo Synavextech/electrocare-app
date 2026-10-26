@@ -33,15 +33,47 @@ router.post('/admin/models', authMiddleware, roleCheck(['admin']), async (req, r
     }
 });
 
-import { getDeliveryPersonnelByShop } from '../models/delivery.js';
+import { getDeliveryPersonnel, updateDeliveryPersonnel, updateDeliveryPersonnelStatus } from '../models/delivery.js';
 
 router.get('/delivery-personnel', async (req, res) => {
     try {
-        const { shopId } = req.query;
-        const personnel = await getDeliveryPersonnelByShop(shopId as string);
+        const { shopId, lat, lng, radius } = req.query;
+        const personnel = await getDeliveryPersonnel({
+            shopId: shopId ? String(shopId) : undefined,
+            lat: lat !== undefined ? parseFloat(String(lat)) : undefined,
+            lng: lng !== undefined ? parseFloat(String(lng)) : undefined,
+            radiusKm: radius !== undefined ? parseFloat(String(radius)) : undefined,
+        });
         res.json(personnel);
     } catch (error) {
         res.status(500).json({ error: 'Failed to load delivery personnel' });
+    }
+});
+
+router.patch('/delivery-personnel/:id/status', authMiddleware, roleCheck(['admin', 'shop']), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, statusNote } = req.body;
+        if (!status || typeof status !== 'string') {
+            return res.status(400).json({ error: 'Status is required and must be a string' });
+        }
+        const updated = await updateDeliveryPersonnelStatus(id, status.trim(), statusNote);
+        res.json(updated);
+    } catch (error: any) {
+        console.error('Update delivery status error:', error.message);
+        res.status(500).json({ error: error.message || 'Failed to update delivery status' });
+    }
+});
+
+router.patch('/delivery-personnel/:id', authMiddleware, roleCheck(['admin', 'shop']), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+        const updated = await updateDeliveryPersonnel(id, updates);
+        res.json(updated);
+    } catch (error: any) {
+        console.error('Update delivery details error:', error.message);
+        res.status(500).json({ error: error.message || 'Failed to update delivery details' });
     }
 });
 

@@ -11,14 +11,20 @@ const useAuth = () => {
   const login = useMutation({
     mutationFn: (data: { email: string; password: string }) => apiClient.post('/auth/login', data).then((res: AxiosResponse) => res.data),
     onSuccess: (data) => {
-      // Set user data in context
+      // Set full user data in context
       setUser({
         id: data.user.id,
-        name: data.user.name,
+        name: data.user.name || data.user.email?.split('@')[0],
         email: data.user.email,
-        role: data.user.role,
-        // Add other user properties as needed
+        role: data.user.role || 'user',
+        phone: data.user.phone || data.user.user_metadata?.phone,
+        referral_code: data.user.referral_code || data.user.referralCode,
+        referralCode: data.user.referralCode || data.user.referral_code,
+        points: data.user.points || 0,
+        wallet_balance: data.user.wallet_balance || 0,
+        wallet: data.user.wallet,
       });
+      queryClient.invalidateQueries({ queryKey: ['wallet'] });
     },
   });
 
@@ -27,10 +33,17 @@ const useAuth = () => {
     onSuccess: (data) => {
       setUser({
         id: data.user.id,
-        name: data.user.name,
+        name: data.user.name || data.user.email?.split('@')[0],
         email: data.user.email,
-        role: data.user.role,
+        role: data.user.role || 'user',
+        phone: data.user.phone || data.user.user_metadata?.phone,
+        referral_code: data.user.referral_code || data.user.referralCode,
+        referralCode: data.user.referralCode || data.user.referral_code,
+        points: data.user.points || 0,
+        wallet_balance: data.user.wallet_balance || 0,
+        wallet: data.user.wallet,
       });
+      queryClient.invalidateQueries({ queryKey: ['wallet'] });
     },
   });
 

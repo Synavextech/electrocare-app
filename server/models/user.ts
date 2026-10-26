@@ -40,7 +40,10 @@ export const getUserByEmail = async (email: string) => {
     .eq('email', email)
     .single();
 
-  if (error) return null;
+  if (error || !data) return null;
+  if (Array.isArray(data.wallet)) {
+    data.wallet = data.wallet[0] || null;
+  }
   return data;
 };
 
@@ -51,7 +54,10 @@ export const getUserById = async (id: string) => {
     .eq('id', id)
     .single();
 
-  if (error) return null;
+  if (error || !data) return null;
+  if (Array.isArray(data.wallet)) {
+    data.wallet = data.wallet[0] || null;
+  }
   return data;
 };
 

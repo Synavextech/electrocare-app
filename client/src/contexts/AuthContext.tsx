@@ -10,6 +10,8 @@ interface User {
   points?: number;
   wallet_balance?: number;
   referral_code?: string;
+  referralCode?: string;
+  wallet?: any;
 }
 
 interface AuthContextType {

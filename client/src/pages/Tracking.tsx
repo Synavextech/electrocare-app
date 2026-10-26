@@ -1,12 +1,21 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../utils/apiClient';
 import TrackingInterface from '../components/TrackingInterface';
+import useSocket from '../hooks/useSocket';
 
 const Tracking: React.FC = () => {
+  const queryClient = useQueryClient();
+  const socket = useSocket();
+
   const { data: repairs, isLoading: repairsLoading } = useQuery({
     queryKey: ['repairs'],
     queryFn: () => apiClient.get('/repairs').then((res) => res.data),
+  });
+
+  const { data: purchases, isLoading: purchasesLoading } = useQuery({
+    queryKey: ['myPurchases'],
+    queryFn: () => apiClient.get('/marketplace/my-purchases').then((res) => res.data),
   });
 
   const { data: updates, isLoading: updatesLoading } = useQuery({
@@ -14,10 +23,32 @@ const Tracking: React.FC = () => {
     queryFn: () => apiClient.get('/tracking/updates').then((res) => res.data),
   });
 
-  if (repairsLoading || updatesLoading) return (
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ['repairs'] });
+      queryClient.invalidateQueries({ queryKey: ['myPurchases'] });
+      queryClient.invalidateQueries({ queryKey: ['updates'] });
+    };
+
+    socket.on('repair_update', handleUpdate);
+    socket.on('tracking_update', handleUpdate);
+    socket.on('delivery_request', handleUpdate);
+    socket.on('purchase_update', handleUpdate);
+
+    return () => {
+      socket.off('repair_update', handleUpdate);
+      socket.off('tracking_update', handleUpdate);
+      socket.off('delivery_request', handleUpdate);
+      socket.off('purchase_update', handleUpdate);
+    };
+  }, [socket, queryClient]);
+
+  if (repairsLoading || updatesLoading || purchasesLoading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-white/30 animate-pulse">
       <div className="text-6xl mb-4">🚚</div>
-      <p className="text-xl font-black uppercase tracking-widest">Locating your devices...</p>
+      <p className="text-xl font-black uppercase tracking-widest">Locating your devices & orders...</p>
     </div>
   );
 
@@ -31,11 +62,13 @@ const Tracking: React.FC = () => {
           <h1 className="text-5xl md:text-6xl font-black text-white mb-6 tracking-tighter">
             Real-Time <span className="text-accent">Updates.</span>
           </h1>
-          <p className="text-white/60 text-xl font-medium leading-relaxed">Monitor your repairs from pickup to delivery. Stay informed every step of the way.</p>
+          <p className="text-white/60 text-xl font-medium leading-relaxed">
+            Monitor your repair services and purchased devices from transit to delivery. Stay informed every step of the way.
+          </p>
         </div>
       </section>
 
-      <TrackingInterface repairs={repairs || []} updates={updates || []} />
+      <TrackingInterface repairs={repairs || []} purchases={purchases || []} updates={updates || []} />
     </div>
   );
 };

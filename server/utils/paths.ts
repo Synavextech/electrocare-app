@@ -21,11 +21,3 @@ export const resolveFromRoot = (relativePath: string) => {
     return path.join(SERVER_ROOT, relativePath);
 };
 
-export const DATA_PATHS = {
-    shops: resolveFromRoot('shops.json'),
-    technicians: resolveFromRoot('technicians.json'),
-    repairableDevices: resolveFromRoot('repairabledevices.json'),
-    repairableModels: resolveFromRoot('repairableModels.json'),
-    locations: resolveFromRoot('locations.json'),
-    deliveryPersonnel: resolveFromRoot('deliverypersonnel.json'),
-};

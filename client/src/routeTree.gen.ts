@@ -14,10 +14,12 @@ import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as TechnicianRouteImport } from './routes/technician'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as DeliveryRouteImport } from './routes/delivery'
+import { Route as CustomRequestsRouteImport } from './routes/custom-requests'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -48,6 +50,11 @@ const ScheduleRoute = ScheduleRouteImport.update({
   path: '/schedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRoute = MarketplaceRouteImport.update({
   id: '/marketplace',
   path: '/marketplace',
@@ -66,6 +73,11 @@ const HomeRoute = HomeRouteImport.update({
 const DeliveryRoute = DeliveryRouteImport.update({
   id: '/delivery',
   path: '/delivery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomRequestsRoute = CustomRequestsRouteImport.update({
+  id: '/custom-requests',
+  path: '/custom-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -94,10 +106,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
+  '/custom-requests': typeof CustomRequestsRoute
   '/delivery': typeof DeliveryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/schedule': typeof ScheduleRoute
   '/shop': typeof ShopRoute
   '/technician': typeof TechnicianRoute
@@ -109,10 +123,12 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
+  '/custom-requests': typeof CustomRequestsRoute
   '/delivery': typeof DeliveryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/schedule': typeof ScheduleRoute
   '/shop': typeof ShopRoute
   '/technician': typeof TechnicianRoute
@@ -125,10 +141,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
+  '/custom-requests': typeof CustomRequestsRoute
   '/delivery': typeof DeliveryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/schedule': typeof ScheduleRoute
   '/shop': typeof ShopRoute
   '/technician': typeof TechnicianRoute
@@ -142,10 +160,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/custom-requests'
     | '/delivery'
     | '/home'
     | '/login'
     | '/marketplace'
+    | '/reset-password'
     | '/schedule'
     | '/shop'
     | '/technician'
@@ -157,10 +177,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/custom-requests'
     | '/delivery'
     | '/home'
     | '/login'
     | '/marketplace'
+    | '/reset-password'
     | '/schedule'
     | '/shop'
     | '/technician'
@@ -172,10 +194,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/custom-requests'
     | '/delivery'
     | '/home'
     | '/login'
     | '/marketplace'
+    | '/reset-password'
     | '/schedule'
     | '/shop'
     | '/technician'
@@ -188,10 +212,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
+  CustomRequestsRoute: typeof CustomRequestsRoute
   DeliveryRoute: typeof DeliveryRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   MarketplaceRoute: typeof MarketplaceRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ScheduleRoute: typeof ScheduleRoute
   ShopRoute: typeof ShopRoute
   TechnicianRoute: typeof TechnicianRoute
@@ -236,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace': {
       id: '/marketplace'
       path: '/marketplace'
@@ -262,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/delivery'
       fullPath: '/delivery'
       preLoaderRoute: typeof DeliveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom-requests': {
+      id: '/custom-requests'
+      path: '/custom-requests'
+      fullPath: '/custom-requests'
+      preLoaderRoute: typeof CustomRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -300,10 +340,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
+  CustomRequestsRoute: CustomRequestsRoute,
   DeliveryRoute: DeliveryRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   MarketplaceRoute: MarketplaceRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ScheduleRoute: ScheduleRoute,
   ShopRoute: ShopRoute,
   TechnicianRoute: TechnicianRoute,

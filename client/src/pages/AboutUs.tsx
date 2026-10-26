@@ -17,6 +17,9 @@ const AboutUs: React.FC = () => {
                 <div className="glass-card p-10 rounded-[2rem] border border-white/5 shadow-lg">
                     <h2 className="text-2xl font-black text-white mb-6 tracking-widest uppercase">Our Mission</h2>
                     <p className="text-white/60 leading-relaxed mb-6">
+                        ElectroCare is an innovative, one-stop destination for all electronics repair and marketplace needs, designed to give your tech devices a second life. The platform seamlessly merges a top-tier repair service with a dynamic marketplace for new and used gadgets. We designed our system for users and technicians to use in a seamless way, so that they can get the best experience out of it. Its intuitive, fast, and visually appealing interface is built for convenience, offering everything from AI-powered diagnostics and scheduling to buying, selling, and swapping electronics—all in one secure ecosystem.
+                    </p>
+                    <p className="text-white/60 leading-relaxed mb-6">
                         We aim to reduce electronic waste by extending the life of your devices through quality repairs and a vibrant marketplace for used and refurbished electronics.
                     </p>
                     <p className="text-white/60 leading-relaxed">

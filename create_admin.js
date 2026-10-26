@@ -48,17 +48,22 @@ async function createAdmin() {
         if (authError.message.includes('already registered') || authError.status === 400 || authError.status === 422) {
             console.log('User might already exist in auth.users, attempting to fetch and update role...');
 
-            // Get the existing user's ID
-            const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
-            if (listError) {
-                console.error('Error listing users:', listError);
-                throw listError;
+            // Get the existing user's ID by paginating through auth users
+            let page = 1;
+            let existingUser = null;
+            while (true) {
+                const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({ page, perPage: 100 });
+                if (listError) {
+                    console.error('Error listing users:', listError);
+                    throw listError;
+                }
+                const users = usersData?.users || [];
+                if (users.length === 0) break;
+                existingUser = users.find(u => u.email === adminEmail);
+                if (existingUser) break;
+                page++;
             }
 
-            const users = usersData.users || [];
-            console.log(`Searching for ${adminEmail} among ${users.length} users...`);
-
-            const existingUser = users.find(u => u.email === adminEmail);
             if (!existingUser) {
                 console.error('User not found in list, but createUser failed. This might be a permission issue.');
                 throw authError;

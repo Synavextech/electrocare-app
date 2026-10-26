@@ -87,24 +87,62 @@ export const createRepair = async (data: any) => {
 };
 
 export const getRepairsByUser = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('RepairRequest')
-    .select('*')
-    .eq('userId', userId);
+  try {
+    const { data, error } = await supabase
+      .from('RepairRequest')
+      .select('*, shop:Shops(id, name, address, county, lat, lng, status), technician:Technicians(id, name, phone, rating), deliveryPersonnel:DeliveryPersonnel(id, name, email, region, type)')
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      console.warn('Relation query failed, falling back to standard select:', error.message);
+      const fallback = await supabase
+        .from('RepairRequest')
+        .select('*')
+        .eq('userId', userId)
+        .order('createdAt', { ascending: false });
+      if (fallback.error) throw fallback.error;
+      return fallback.data;
+    }
+    return data;
+  } catch (err) {
+    const fallback = await supabase
+      .from('RepairRequest')
+      .select('*')
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false });
+    if (fallback.error) throw fallback.error;
+    return fallback.data;
+  }
 };
 
 export const getRepairById = async (id: string) => {
-  const { data, error } = await supabase
-    .from('RepairRequest')
-    .select('*')
-    .eq('id', id)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('RepairRequest')
+      .select('*, shop:Shops(id, name, address, county, lat, lng, status), technician:Technicians(id, name, phone, rating), deliveryPersonnel:DeliveryPersonnel(id, name, email, region, type)')
+      .eq('id', id)
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      const fallback = await supabase
+        .from('RepairRequest')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (fallback.error) throw fallback.error;
+      return fallback.data;
+    }
+    return data;
+  } catch (err) {
+    const fallback = await supabase
+      .from('RepairRequest')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (fallback.error) throw fallback.error;
+    return fallback.data;
+  }
 };
 
 export const updateRepair = async (id: string, data: Partial<RepairRequest>) => {

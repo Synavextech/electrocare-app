@@ -2,8 +2,6 @@ import { useState, useRef } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import useAuth from '../hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
-import TechnicianApplication from './TechnicianApplication';
-import DeliveryApplication from './DeliveryApplication';
 import useOnClickOutside from '../hooks/useOnClickOutside';
 
 const TopNav = () => {
@@ -18,10 +16,36 @@ const TopNav = () => {
   useOnClickOutside(profileRef, () => setProfileOpen(false));
   useOnClickOutside(opsRef, () => setOpsOpen(false));
 
-  const copyReferral = () => {
-    if (user?.referral_code) {
-      navigator.clipboard.writeText(user.referral_code).catch(console.error);
-      alert('Referral code copied!');
+  const [copiedType, setCopiedType] = useState<'code' | 'link' | null>(null);
+
+  const refCode = user?.referral_code || user?.referralCode || '';
+  const inviteUrl = typeof window !== 'undefined' && refCode 
+    ? `${window.location.origin}/login?ref=${refCode}` 
+    : `https://electrocare.tech/login?ref=${refCode}`;
+
+  const copyReferralCode = () => {
+    if (refCode) {
+      navigator.clipboard.writeText(refCode).catch(console.error);
+      setCopiedType('code');
+      setTimeout(() => setCopiedType(null), 2500);
+    }
+  };
+
+  const copyInviteLink = () => {
+    if (inviteUrl) {
+      navigator.clipboard.writeText(inviteUrl).catch(console.error);
+      setCopiedType('link');
+      setTimeout(() => setCopiedType(null), 2500);
+    }
+  };
+
+  const getRoleLabel = (role?: string) => {
+    switch (role) {
+      case 'admin': return '🛡️ System Administrator';
+      case 'shop': return '🏬 Shop Merchant';
+      case 'technician': return '👨‍🔧 Certified Technician';
+      case 'delivery': return '🚚 Delivery Fleet';
+      default: return '👤 Standard Member';
     }
   };
 
@@ -30,47 +54,113 @@ const TopNav = () => {
       {/* Profile (left) */}
       <div className="relative" ref={profileRef}>
         <button
-          onClick={() => setProfileOpen(!profileOpen)}
+          onClick={() => {
+            if (!user) {
+              navigate({ to: '/login' });
+            } else {
+              setProfileOpen(!profileOpen);
+            }
+          }}
           className="text-2xl hover:scale-110 active:scale-95 transition-premium p-2 rounded-full hover:bg-white/10 block"
+          title={user ? `${user.name || user.email}` : 'Login / Register'}
         >
-          👤
+          {user ? '👤' : '🔑'}
         </button>
-        {profileOpen && (
-          <div className="absolute left-0 mt-3 w-80 glass-card rounded-2xl p-6 text-white animate-in fade-in slide-in-from-top-2 duration-300 shadow-2xl border border-white/10">
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 glass-card rounded-full border-2 border-brand/20 flex items-center justify-center text-3xl mb-3">
+
+        {profileOpen && user && (
+          <div className="absolute left-0 mt-3 w-88 max-w-[92vw] glass-card rounded-2xl p-6 text-foreground animate-in fade-in slide-in-from-top-2 duration-300 shadow-2xl border border-border-glass bg-canvas/95 backdrop-blur-xl">
+            {/* Header Avatar & Identity */}
+            <div className="flex items-center gap-4 mb-5 pb-4 border-b border-white/10">
+              <div className="w-14 h-14 rounded-2xl vibrant-gradient flex items-center justify-center text-2xl shadow-lg shrink-0">
                 👤
               </div>
-              <h3 className="text-xl font-black tracking-tight">{user?.email?.split('@')[0]}</h3>
-              <p className="text-brand text-[10px] font-black uppercase tracking-[0.2em]">{user?.role}</p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div className="glass-card p-3 rounded-xl border border-white/5 bg-white/5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Email</p>
-                <p className="text-sm font-medium truncate">{user?.email}</p>
-              </div>
-              <div className="glass-card p-3 rounded-xl border border-white/5 bg-white/5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Phone</p>
-                <p className="text-sm font-medium">{user?.phone || 'Not set'}</p>
+              <div className="overflow-hidden">
+                <h3 className="text-base font-black tracking-tight text-foreground truncate">
+                  {user.name || user.email?.split('@')[0]}
+                </h3>
+                <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-brand/20 text-brand border border-brand/30">
+                  {getRoleLabel(user.role)}
+                </span>
               </div>
             </div>
 
-            <div
-              className="glass-card p-4 rounded-xl border border-dashed border-brand/30 bg-brand/5 mb-6 cursor-pointer active:scale-95 transition-premium text-center"
-              onClick={() => { copyReferral(); setProfileOpen(false); }}
-            >
-              <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Referral Code</p>
-              <p className="text-sm font-bold uppercase">{user?.referral_code || '---'}</p>
-              <p className="text-[8px] text-white/40 mt-1 uppercase font-bold">Click to copy & invite</p>
+            {/* Profile Credentials Grid */}
+            <div className="space-y-3 mb-5 text-xs">
+              <div className="glass-card p-3 rounded-xl border border-white/5 bg-white/[0.02]">
+                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/50 mb-0.5">Email Address</p>
+                <p className="text-xs font-semibold text-foreground truncate">{user.email}</p>
+              </div>
+
+              <div className="glass-card p-3 rounded-xl border border-white/5 bg-white/[0.02] flex justify-between items-center">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-foreground/50 mb-0.5">Phone Number</p>
+                  <p className="text-xs font-semibold text-foreground">{user.phone || 'Not set'}</p>
+                </div>
+                {!user.phone && (
+                  <span className="text-[9px] text-amber-400 font-bold uppercase tracking-wider">Required for M-Pesa</span>
+                )}
+              </div>
+
+              {/* Wallet Quick Summary */}
+              <div className="glass-card p-3 rounded-xl border border-brand/20 bg-brand/5 flex justify-between items-center">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand mb-0.5">Wallet Balance</p>
+                  <p className="text-sm font-black text-foreground">
+                    KES {Number(user.wallet_balance || user.wallet?.balance || 0).toLocaleString()}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-accent mb-0.5">Reward Points</p>
+                  <p className="text-sm font-black text-foreground">
+                    {user.points || user.wallet?.points || 0} <span className="text-[10px] text-foreground/40 font-bold">PTS</span>
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <button
-              onClick={() => { logout(); setProfileOpen(false); navigate({ to: '/' }); }}
-              className="w-full glass-card py-3 rounded-xl text-red-400 font-black uppercase tracking-widest text-[10px] hover:bg-red-500/10 border border-white/5 transition-premium"
-            >
-              🚪 Logout
-            </button>
+            {/* Invite & Referral Link Generator */}
+            <div className="space-y-2 mb-5">
+              <div
+                className="glass-card p-3.5 rounded-xl border border-dashed border-brand/40 bg-brand/5 cursor-pointer hover:bg-brand/10 transition-premium"
+                onClick={copyReferralCode}
+                title="Click to copy Referral Code"
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-brand">Referral Code</span>
+                  <span className="text-[9px] font-bold text-brand uppercase">
+                    {copiedType === 'code' ? '✓ Copied!' : 'Click to Copy'}
+                  </span>
+                </div>
+                <p className="text-sm font-black tracking-wider text-foreground">{refCode || 'GEN-REF'}</p>
+              </div>
+
+              <button
+                onClick={copyInviteLink}
+                className="w-full py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-foreground font-black text-[10px] uppercase tracking-wider flex items-center justify-between transition-premium cursor-pointer group"
+              >
+                <span className="flex items-center gap-1.5 truncate">
+                  <span>🔗</span> {copiedType === 'link' ? 'Invite Link Copied to Clipboard!' : 'Copy Full Invite Link'}
+                </span>
+                <span className="text-brand group-hover:translate-x-0.5 transition-transform">→</span>
+              </button>
+            </div>
+
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+              <Link
+                to="/wallet"
+                onClick={() => setProfileOpen(false)}
+                className="py-2.5 rounded-xl glass-card text-foreground text-center font-black uppercase tracking-wider text-[10px] hover:border-brand/40 transition-premium flex items-center justify-center gap-1"
+              >
+                <span>💳</span> My Wallet
+              </Link>
+              <button
+                onClick={() => { logout(); setProfileOpen(false); navigate({ to: '/' }); }}
+                className="py-2.5 rounded-xl glass-card text-rose-400 text-center font-black uppercase tracking-wider text-[10px] hover:bg-rose-500/10 border border-rose-500/20 transition-premium cursor-pointer"
+              >
+                🚪 Logout
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -91,8 +181,6 @@ const TopNav = () => {
               </li>
 
               <li className="space-y-1">
-                <TechnicianApplication />
-                <DeliveryApplication />
                 <Link
                   to="/marketplace"
                   search={{ action: 'sell-dead' }}
@@ -100,6 +188,16 @@ const TopNav = () => {
                   onClick={() => setOpsOpen(false)}
                 >
                   <span className="text-lg">💀</span> Sell Dead/Unused Device
+                </Link>
+              </li>
+
+              <li className="space-y-1">
+                <Link
+                  to="/custom-requests"
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-cyan-500/10 rounded-lg transition-premium text-sm font-bold text-cyan-400"
+                  onClick={() => setOpsOpen(false)}
+                >
+                  <span className="text-lg">🔍</span> Custom Requests & Offers
                 </Link>
               </li>
 

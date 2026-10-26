@@ -17,10 +17,10 @@ const DeliveryPersonneldashboard: React.FC = () => {
 
     const acceptDeliveryMutation = useMutation({
         mutationFn: (repairId: string) =>
-            apiClient.post(`/repairs/accept/${repairId}`, { estimatedCost: 100, estimatedTime: '1 hour' }),
+            apiClient.post(`/repairs/accept/${repairId}`, { estimatedCost: 200, estimatedTime: '1 hour' }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['deliveryAssignments'] });
-            alert('Delivery booking accepted at standard $100 fee!');
+            alert('Delivery booking accepted at standard KES 200 fee!');
         }
     });
 
@@ -82,7 +82,7 @@ const DeliveryPersonneldashboard: React.FC = () => {
                                     <div className="flex flex-col gap-3 items-end">
                                         {repair.status === 'pending' || repair.status === 'assigned' ? (
                                             <div className="text-right">
-                                                <p className="text-[8px] font-black uppercase text-accent mb-2">Standard Fee: $100.00</p>
+                                                <p className="text-[8px] font-black uppercase text-accent mb-2">Standard Fee: KES 200.00</p>
                                                 <button
                                                     onClick={() => acceptDeliveryMutation.mutate(repair.id)}
                                                     className="vibrant-gradient text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:shadow-accent/40 transition-premium"
@@ -90,7 +90,7 @@ const DeliveryPersonneldashboard: React.FC = () => {
                                             </div>
                                         ) : (
                                             <div className="text-right">
-                                                <p className="text-brand font-black text-xl">$100.00</p>
+                                                <p className="text-brand font-black text-xl">KES 200.00</p>
                                                 <button className="glass-card px-8 py-3 rounded-xl text-white/40 font-bold text-[10px] uppercase tracking-widest hover:text-white transition-premium border border-white/5 mt-2">Update Status</button>
                                             </div>
                                         )}

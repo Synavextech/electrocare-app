@@ -1,23 +1,31 @@
 export interface Repair {
-    id: number;
-    user_id: number;
-    technician_id: number | null;
-    device_type: string;
-    issue: string;
-    status: 'pending' | 'in_progress' | 'completed';
-    delivery: boolean;
-    tracking_number: string;
-    cost: number;
-    created_at: string;
-    updated_at: string;
-  }
-  
-  export interface TrackingUpdate {
-    id: number;
-    repair_id: number;
-    status_update: string;
-    created_at: string; // Timestamp
-  }
+  id: string;
+  request_id?: string;
+  userId?: string;
+  user_id?: string;
+  technicianId?: string | null;
+  technician_id?: string | null;
+  device_type: string;
+  device_model?: string;
+  issue: string;
+  status: string;
+  delivery: boolean;
+  trackingNumber?: string;
+  tracking_number?: string;
+  cost?: number;
+  paymentMethod?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TrackingUpdate {
+  id: string | number;
+  repair_id?: string | number;
+  status_update: string;
+  created_at: string;
+}
 
   
   // Add other models as needed (User, Sale, etc.)

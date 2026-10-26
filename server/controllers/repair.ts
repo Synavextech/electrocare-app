@@ -4,7 +4,9 @@ import { io } from '../app.js';
 
 export const scheduleRepair = async (req: Request, res: Response) => {
   try {
+    console.log("INCOMING BODY:", req.body);
     const data = RepairSchema.parse(req.body);
+    console.log("PARSED DATA:", data);
     const repair = await createRepair({ ...data, userId: req.user!.id });
 
     // If delivery is requested, find closest delivery person (mock logic for now)
@@ -32,11 +34,22 @@ export const getMyRepairs = async (req: Request, res: Response) => {
 
 export const updateRepairStatus = async (req: Request, res: Response) => {
   try {
-    if (req.user?.role !== 'technician') return res.status(403).json({ error: 'Forbidden' });
+    const userRole = req.user?.role;
+    if (!['technician', 'shop', 'admin', 'delivery'].includes(userRole || '')) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
     const { id } = req.params;
-    const { status } = req.body;
-    const repair = await updateRepair(id, { status });
-    io.emit('repair_update', { repairId: repair.id, status }); // WebSocket notify user
+    const { status, technicianId, deliveryPersonnelId, cost, estimatedTime } = req.body;
+
+    const updates: any = {};
+    if (status !== undefined) updates.status = status;
+    if (technicianId !== undefined) updates.technicianId = technicianId;
+    if (deliveryPersonnelId !== undefined) updates.deliveryPersonnelId = deliveryPersonnelId;
+    if (cost !== undefined) updates.cost = cost;
+    if (estimatedTime !== undefined) updates.estimatedTime = estimatedTime;
+
+    const repair = await updateRepair(id, updates);
+    io.emit('repair_update', { repairId: repair.id, ...updates }); // WebSocket notify user
     res.json(repair);
   } catch (err) {
     console.error('Update failed:', (err as Error).message);

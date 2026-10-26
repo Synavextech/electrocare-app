@@ -116,7 +116,7 @@ const Techniciandashboard: React.FC = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="space-y-1">
-                                                        <label className="text-[8px] font-black uppercase text-white/20 ml-1">Est. Cost ($)</label>
+                                                        <label className="text-[8px] font-black uppercase text-white/20 ml-1">Est. Cost (KES)</label>
                                                         <input
                                                             type="number"
                                                             placeholder="0.00"
@@ -153,7 +153,7 @@ const Techniciandashboard: React.FC = () => {
                                                 <div className="flex gap-4">
                                                     <div className="glass-card px-4 py-2 rounded-lg border border-white/5">
                                                         <p className="text-[8px] font-black text-white/20 uppercase">Cost</p>
-                                                        <p className="text-sm font-black text-white">${repair.estimatedCost || '0'}</p>
+                                                        <p className="text-sm font-black text-white">KES {Number(repair.estimatedCost || 0).toLocaleString()}</p>
                                                     </div>
                                                     <div className="glass-card px-4 py-2 rounded-lg border border-white/5">
                                                         <p className="text-[8px] font-black text-white/20 uppercase">Time</p>
@@ -227,7 +227,7 @@ const Techniciandashboard: React.FC = () => {
                                 </div>
                                 <p className="text-white/60 text-xs mb-6 line-clamp-2 leading-relaxed">{sale.description}</p>
                                 <div className="flex justify-between items-center pt-6 border-t border-white/5">
-                                    <span className="text-2xl font-black text-white">${sale.price}</span>
+                                    <span className="text-2xl font-black text-white">KES {Number(sale.price || 0).toLocaleString()}</span>
                                     <button
                                         onClick={() => approveSaleMutation.mutate({ saleId: sale.id, points: 10 })}
                                         className="vibrant-gradient text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-premium"
